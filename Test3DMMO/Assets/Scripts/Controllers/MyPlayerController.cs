@@ -24,13 +24,13 @@ public class MyPlayerController : MonoBehaviour
     public bool _canPush;
     [Range(0.5f, 5f)] public float _strength = 1.1f;
 
-    public float _jumpTimeout = 0.67f; // 착지 애니메이션 시간. (TODO 추후 착지 애니메이션 빠르게 수정)
+    public float _jumpTimeout = 0.7f; // 착지 애니메이션 시간. (TODO 추후 착지 애니메이션 빠르게 수정)
     public float _fallTimeout = 0.15f; // fall 상태 이전 통과 필요 시간. 계단을 내려갈 때 유용. (최소 이 시간이 지나야 freeFall 상태 모션으로 들어감)
 
     [Header("플레이어 지면 체크")]
     public bool _grounded = true;
     public float _groundedOffset = -0.14f; // 울퉁불퉁한 지면에서 유용
-    public float _groundedRadius = 0.31f; // grounded check의 반지름. 캐릭터 컨트롤러의 반지름과 일치해야 함
+    public float _groundedRadius = 0.33f; // grounded check의 반지름. 캐릭터 컨트롤러의 반지름과 일치해야 함
     public LayerMask GroundLayers;
 
     [Header("시네머신")]
