@@ -63,6 +63,7 @@ public class MyPlayerController : MonoBehaviour
     private int _animIDJump;
     private int _animIDFreeFall;
     private int _animIDMotionSpeed;
+    private int _animIDAttack;
 
     private PlayerInput _playerInput;
 
@@ -86,6 +87,7 @@ public class MyPlayerController : MonoBehaviour
 #endif
         }
     }
+
 
     private void Awake()
     {
@@ -120,6 +122,19 @@ public class MyPlayerController : MonoBehaviour
         JumpAndGravity();
         GroundedCheck();
         Move();
+        Attack();
+    }
+
+    void Attack()
+    {
+        if(_input.attack)
+        {
+            if(_hasAnimator)
+            {
+                _animator.SetTrigger(_animIDAttack);
+            }
+            _input.attack = false;
+        }
     }
 
     private void LateUpdate()
@@ -134,6 +149,7 @@ public class MyPlayerController : MonoBehaviour
         _animIDJump = Animator.StringToHash("Jump");
         _animIDFreeFall = Animator.StringToHash("FreeFall");
         _animIDMotionSpeed = Animator.StringToHash("MotionSpeed");
+        _animIDAttack = Animator.StringToHash("Attack");
     }
 
     private void GroundedCheck()
