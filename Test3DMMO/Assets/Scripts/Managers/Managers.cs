@@ -7,12 +7,21 @@ public class Managers : MonoBehaviour
     static Managers s_inst;
     static Managers Inst { get { Init(); return s_inst; } }
 
-    #region
+    #region Contents
     InputManager _input = new InputManager();
-
-    #endregion
+    ObjectManager _obj = new ObjectManager();
+    NetworkManager _network = new NetworkManager();
 
     public static InputManager Input { get { return Inst._input; } }
+    public static ObjectManager Object { get { return Inst._obj; } }
+    public static NetworkManager Network { get { return Inst._network; } }
+    #endregion
+
+    #region Core
+    ResourceManager _resource = new ResourceManager();
+
+    public static ResourceManager Resource { get { return Inst._resource; } }
+    #endregion
 
     private void Start()
     {
@@ -22,6 +31,7 @@ public class Managers : MonoBehaviour
     private void Update()
     {
         //_input.OnUpdate();
+        _network.Update();  
 
     }
 
@@ -38,6 +48,9 @@ public class Managers : MonoBehaviour
 
             DontDestroyOnLoad(go);
             s_inst = go.GetComponent<Managers>();
+
+
+            s_inst._network.Init();
         }
     }
 }

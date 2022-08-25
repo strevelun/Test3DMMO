@@ -3,47 +3,22 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class MyPlayerController : MonoBehaviour
+public class MyPlayerController : PlayerController
 {
-    [Header("플레이어")]
-    public float _moveSpeed = 5.0f;
-    public float _sprintSpeed = 10.0f;
-    public float _rotationSmoothTime = 0.12f; // 캐릭터 회전 속도
-    public float _speedChangeRate = 10.0f; // 가속/감속
+    private PlayerInput _playerInput;
 
-    public AudioClip _landingAudioClip;
-    public AudioClip[] _footstepAudioClips;
-    [Range(0, 1)] public float _footstepAudioVolume = 0.5f;
+    private CharacterController _controller;
+    private PlayerInputSystem _input;
+    private GameObject _mainCamera;
 
-    [Space(10)]
-    public float _jumpHeight = 1.2f;
-    public float _gravity = -15.0f; // 캐릭터 고유 중력
-
-    [Space(10)]
-    public LayerMask _pushLayers;
-    public bool _canPush;
-    [Range(0.5f, 5f)] public float _strength = 1.1f;
-
-    public float _jumpTimeout = 0.7f; // 착지 애니메이션 시간. (TODO 추후 착지 애니메이션 빠르게 수정)
-    public float _fallTimeout = 0.15f; // fall 상태 이전 통과 필요 시간. 계단을 내려갈 때 유용. (최소 이 시간이 지나야 freeFall 상태 모션으로 들어감)
-
-    [Header("플레이어 지면 체크")]
-    public bool _grounded = true;
-    public float _groundedOffset = -0.14f; // 울퉁불퉁한 지면에서 유용
-    public float _groundedRadius = 0.33f; // grounded check의 반지름. 캐릭터 컨트롤러의 반지름과 일치해야 함
-    public LayerMask GroundLayers;
-
-    [Header("시네머신")]
-    public GameObject CinemachineCameraTarget;
-    public float _topClamp = 70.0f; // 카메라 최대각
-    public float _bottomClamp = -30.0f; // 카메라 최소각
-
-    public float _cameraAngleOverride = 0.0f; // lock 상태일 때 카메라 위치 미세조정할 때 유용
-    public bool _lockCameraPosition = false; // 카메라 모든 축 잠금
+    private const float _threshold = 0.01f;
 
     // cinemachine
     private float _cinemachineTargetYaw;
     private float _cinemachineTargetPitch;
+
+    public float _cameraAngleOverride = 0.0f; // lock 상태일 때 카메라 위치 미세조정할 때 유용
+    public bool _lockCameraPosition = false; // 카메라 모든 축 잠금
 
     // player
     private float _speed;
@@ -57,37 +32,17 @@ public class MyPlayerController : MonoBehaviour
     private float _jumpTimeoutDelta;
     private float _fallTimeoutDelta;
 
-    // animation IDs
-    private int _animIDSpeed;
-    private int _animIDGrounded;
-    private int _animIDJump;
-    private int _animIDFreeFall;
-    private int _animIDMotionSpeed;
-    private int _animIDAttack;
-
-    private PlayerInput _playerInput;
-
-    private Animator _animator;
-    private CharacterController _controller;
-    private PlayerInputSystem _input;
-    private GameObject _mainCamera;
-
-    private const float _threshold = 0.01f;
-
-    private bool _hasAnimator;
-
     private bool IsCurrentDeviceMouse
     {
         get
         {
 #if ENABLE_INPUT_SYSTEM
-                return _playerInput.currentControlScheme == "KeyboardMouse";
+            return _playerInput.currentControlScheme == "KeyboardMouse";
 #else
             return false;
 #endif
         }
     }
-
 
     private void Awake()
     {
@@ -97,27 +52,8 @@ public class MyPlayerController : MonoBehaviour
         }
     }
 
-    void Start()
-    {
-        _cinemachineTargetYaw = CinemachineCameraTarget.transform.rotation.eulerAngles.y;
-
-        _hasAnimator = transform.GetChild(0).TryGetComponent(out _animator);
-
-        _controller = GetComponent<CharacterController>();
-        _input = GetComponent<PlayerInputSystem>();
-#if ENABLE_INPUT_SYSTEM
-        _playerInput = GetComponent<PlayerInput>();
-#endif
-
-        AssignAnimationIDs();
-
-        _jumpTimeoutDelta = _jumpTimeout;
-        _fallTimeoutDelta = _fallTimeout;
-    }
-
     private void Update()
     {
-        _hasAnimator = transform.GetChild(0).TryGetComponent(out _animator);
 
         JumpAndGravity();
         GroundedCheck();
@@ -125,11 +61,26 @@ public class MyPlayerController : MonoBehaviour
         Attack();
     }
 
+    protected override void Init()
+    {
+        base.Init();
+
+        _cinemachineTargetYaw = CinemachineCameraTarget.transform.rotation.eulerAngles.y;
+        _controller = GetComponent<CharacterController>();
+        _input = GetComponent<PlayerInputSystem>();
+#if ENABLE_INPUT_SYSTEM
+        _playerInput = GetComponent<PlayerInput>();
+#endif
+
+        _jumpTimeoutDelta = _jumpTimeout;
+        _fallTimeoutDelta = _fallTimeout;
+    }
+
     void Attack()
     {
-        if(_input.attack)
+        if (_input.attack)
         {
-            if(_hasAnimator)
+            if (_hasAnimator)
             {
                 _animator.SetTrigger(_animIDAttack);
             }
@@ -137,32 +88,11 @@ public class MyPlayerController : MonoBehaviour
         }
     }
 
-    private void LateUpdate()
+    private static float ClampAngle(float lfAngle, float lfMin, float lfMax)
     {
-        CameraRotation();
-    }
-
-    private void AssignAnimationIDs()
-    {
-        _animIDSpeed = Animator.StringToHash("Speed");
-        _animIDGrounded = Animator.StringToHash("Grounded");
-        _animIDJump = Animator.StringToHash("Jump");
-        _animIDFreeFall = Animator.StringToHash("FreeFall");
-        _animIDMotionSpeed = Animator.StringToHash("MotionSpeed");
-        _animIDAttack = Animator.StringToHash("Attack");
-    }
-
-    private void GroundedCheck()
-    {
-        Vector3 spherePosition = new Vector3(transform.position.x, transform.position.y - _groundedOffset,
-            transform.position.z);
-        _grounded = Physics.CheckSphere(spherePosition, _groundedRadius, GroundLayers,
-            QueryTriggerInteraction.Ignore);
-
-        if (_hasAnimator)
-        {
-            _animator.SetBool(_animIDGrounded, _grounded);
-        }
+        if (lfAngle < -360f) lfAngle += 360f;
+        if (lfAngle > 360f) lfAngle -= 360f;
+        return Mathf.Clamp(lfAngle, lfMin, lfMax);
     }
 
     private void CameraRotation()
@@ -185,7 +115,7 @@ public class MyPlayerController : MonoBehaviour
             _cinemachineTargetYaw, 0.0f);
     }
 
-    private void Move()
+    protected override void Move()
     {
         float targetSpeed = _input.sprint ? _sprintSpeed : _moveSpeed;
 
@@ -297,11 +227,25 @@ public class MyPlayerController : MonoBehaviour
         }
     }
 
-    private static float ClampAngle(float lfAngle, float lfMin, float lfMax)
+    private void OnLand(AnimationEvent animationEvent)
     {
-        if (lfAngle < -360f) lfAngle += 360f;
-        if (lfAngle > 360f) lfAngle -= 360f;
-        return Mathf.Clamp(lfAngle, lfMin, lfMax);
+        if (animationEvent.animatorClipInfo.weight > 0.5f)
+        {
+            AudioSource.PlayClipAtPoint(_landingAudioClip, transform.TransformPoint(_controller.center), _footstepAudioVolume);
+        }
+    }
+
+    private void GroundedCheck()
+    {
+        Vector3 spherePosition = new Vector3(transform.position.x, transform.position.y - _groundedOffset,
+            transform.position.z);
+        _grounded = Physics.CheckSphere(spherePosition, _groundedRadius, GroundLayers,
+            QueryTriggerInteraction.Ignore);
+
+        if (_hasAnimator)
+        {
+            _animator.SetBool(_animIDGrounded, _grounded);
+        }
     }
 
     private void OnFootstep(AnimationEvent animationEvent)
@@ -316,34 +260,7 @@ public class MyPlayerController : MonoBehaviour
         }
     }
 
-    private void OnLand(AnimationEvent animationEvent)
-    {
-        if (animationEvent.animatorClipInfo.weight > 0.5f)
-        {
-            AudioSource.PlayClipAtPoint(_landingAudioClip, transform.TransformPoint(_controller.center), _footstepAudioVolume);
-        }
-    }
-
-    private void OnDrawGizmosSelected()
-    {
-        Color transparentGreen = new Color(0.0f, 1.0f, 0.0f, 0.35f);
-        Color transparentRed = new Color(1.0f, 0.0f, 0.0f, 0.35f);
-
-        if (_grounded) Gizmos.color = transparentGreen;
-        else Gizmos.color = transparentRed;
-
-        // when selected, draw a gizmo in the position of, and matching radius of, the grounded collider
-        Gizmos.DrawSphere(
-            new Vector3(transform.position.x, transform.position.y - _groundedOffset, transform.position.z),
-            _groundedRadius);
-    }
-
-    private void OnControllerColliderHit(ControllerColliderHit hit)
-    {
-        if (_canPush) PushRigidBodies(hit);
-    }
-
-    private void PushRigidBodies(ControllerColliderHit hit)
+    protected override void PushRigidBodies(ControllerColliderHit hit)
     {
         Rigidbody body = hit.collider.attachedRigidbody;
         if (body == null || body.isKinematic) return;
@@ -356,5 +273,15 @@ public class MyPlayerController : MonoBehaviour
         Vector3 pushDir = new Vector3(hit.moveDirection.x, 0.0f, hit.moveDirection.z);
 
         body.AddForce(pushDir * _strength, ForceMode.Impulse);
+    }
+
+    private void LateUpdate()
+    {
+        CameraRotation();
+    }
+
+    private void OnControllerColliderHit(ControllerColliderHit hit)
+    {
+        if (_canPush) PushRigidBodies(hit);
     }
 }
