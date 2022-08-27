@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "3+MLOGRdxjYf48+6tQTMCSktjlQRMEIC8JsZSOmY7VEupmFE3kCC/jj15wWuK3Yq4xz+YDOcBhhC8SuSo7dU1w==",
+  "success": true,
+  "projectFilePath": "C:\\Users\\fere1\\Documents\\GitHub\\Test3DMMO\\Server\\ServerCore\\ServerCore.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\fere1\\.nuget\\packages\\newtonsoft.json\\13.0.1\\newtonsoft.json.13.0.1.nupkg.sha512"
+  ],
+  "logs": []
+}

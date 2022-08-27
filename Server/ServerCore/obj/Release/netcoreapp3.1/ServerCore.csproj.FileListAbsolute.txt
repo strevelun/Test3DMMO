@@ -1,0 +1,17 @@
+C:\Rookiss\MMO_Server\ServerCore\bin\Release\netcoreapp3.1\ServerCore.deps.json
+C:\Rookiss\MMO_Server\ServerCore\bin\Release\netcoreapp3.1\ServerCore.dll
+C:\Rookiss\MMO_Server\ServerCore\bin\Release\netcoreapp3.1\ServerCore.pdb
+C:\Rookiss\MMO_Server\ServerCore\obj\Release\netcoreapp3.1\ServerCore.csproj.CoreCompileInputs.cache
+C:\Rookiss\MMO_Server\ServerCore\obj\Release\netcoreapp3.1\ServerCore.AssemblyInfoInputs.cache
+C:\Rookiss\MMO_Server\ServerCore\obj\Release\netcoreapp3.1\ServerCore.AssemblyInfo.cs
+C:\Rookiss\MMO_Server\ServerCore\obj\Release\netcoreapp3.1\ServerCore.dll
+C:\Rookiss\MMO_Server\ServerCore\obj\Release\netcoreapp3.1\ServerCore.pdb
+C:\Rookiss\MMO_Game\Server\ServerCore\bin\Release\netcoreapp3.1\ServerCore.deps.json
+C:\Rookiss\MMO_Game\Server\ServerCore\bin\Release\netcoreapp3.1\ServerCore.dll
+C:\Rookiss\MMO_Game\Server\ServerCore\bin\Release\netcoreapp3.1\ServerCore.pdb
+C:\Rookiss\MMO_Game\Server\ServerCore\obj\Release\netcoreapp3.1\ServerCore.csprojAssemblyReference.cache
+C:\Rookiss\MMO_Game\Server\ServerCore\obj\Release\netcoreapp3.1\ServerCore.AssemblyInfoInputs.cache
+C:\Rookiss\MMO_Game\Server\ServerCore\obj\Release\netcoreapp3.1\ServerCore.AssemblyInfo.cs
+C:\Rookiss\MMO_Game\Server\ServerCore\obj\Release\netcoreapp3.1\ServerCore.csproj.CoreCompileInputs.cache
+C:\Rookiss\MMO_Game\Server\ServerCore\obj\Release\netcoreapp3.1\ServerCore.dll
+C:\Rookiss\MMO_Game\Server\ServerCore\obj\Release\netcoreapp3.1\ServerCore.pdb

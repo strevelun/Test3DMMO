@@ -1,0 +1,4 @@
+{
+	"dataPath": "../../../../../Test3DMMO/Assets/Resources/Data",
+	"connectionString": "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=GameDB;"
+}
