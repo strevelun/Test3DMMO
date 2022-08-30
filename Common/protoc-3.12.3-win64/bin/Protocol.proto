@@ -30,8 +30,10 @@ enum MsgId {
 enum CreatureState {
   IDLE = 0;
   MOVING = 1;
-  SKILL = 2;
-  DEAD = 3;
+  JUMP = 2;
+  INAIR = 3;
+  SKILL = 4;
+  DEAD = 5;
 }
 
 enum GameObjectType {

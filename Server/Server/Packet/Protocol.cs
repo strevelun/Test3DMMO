@@ -67,20 +67,20 @@ namespace Google.Protobuf.Protocol {
             "DBITCg9TX0NSRUFURV9QTEFZRVIQDRIPCgtTX0lURU1fTElTVBAOEg4KClNf",
             "QUREX0lURU0QDxIQCgxDX0VRVUlQX0lURU0QEBIQCgxTX0VRVUlQX0lURU0Q",
             "ERIRCg1TX0NIQU5HRV9TVEFUEBISCgoGU19QSU5HEBMSCgoGQ19QT05HEBQq",
-            "OgoNQ3JlYXR1cmVTdGF0ZRIICgRJRExFEAASCgoGTU9WSU5HEAESCQoFU0tJ",
-            "TEwQAhIICgRERUFEEAMqMwoOR2FtZU9iamVjdFR5cGUSCAoETk9ORRAAEgoK",
-            "BlBMQVlFUhABEgsKB01PTlNURVIQAipaChFQbGF5ZXJTZXJ2ZXJTdGF0ZRIW",
-            "ChJTRVJWRVJfU1RBVEVfTE9HSU4QABIWChJTRVJWRVJfU1RBVEVfTE9CQlkQ",
-            "ARIVChFTRVJWRVJfU1RBVEVfR0FNRRACKmMKCEl0ZW1UeXBlEhIKDklURU1f",
-            "VFlQRV9OT05FEAASFAoQSVRFTV9UWVBFX1dFQVBPThABEhMKD0lURU1fVFlQ",
-            "RV9BUk1PUhACEhgKFElURU1fVFlQRV9DT05TVU1BQkxFEAMqTgoKV2VhcG9u",
-            "VHlwZRIUChBXRUFQT05fVFlQRV9OT05FEAASFQoRV0VBUE9OX1RZUEVfU1dP",
-            "UkQQARITCg9XRUFQT05fVFlQRV9CT1cQAipjCglBcm1vclR5cGUSEwoPQVJN",
-            "T1JfVFlQRV9OT05FEAASFQoRQVJNT1JfVFlQRV9IRUxNRVQQARIUChBBUk1P",
-            "Ul9UWVBFX0FSTU9SEAISFAoQQVJNT1JfVFlQRV9CT09UUxADKkYKDkNvbnN1",
-            "bWFibGVUeXBlEhgKFENPTlNVTUFCTEVfVFlQRV9OT05FEAASGgoWQ09OU1VN",
-            "QUJMRV9UWVBFX1BPVElPThABQhuqAhhHb29nbGUuUHJvdG9idWYuUHJvdG9j",
-            "b2xiBnByb3RvMw=="));
+            "TwoNQ3JlYXR1cmVTdGF0ZRIICgRJRExFEAASCgoGTU9WSU5HEAESCAoESlVN",
+            "UBACEgkKBUlOQUlSEAMSCQoFU0tJTEwQBBIICgRERUFEEAUqMwoOR2FtZU9i",
+            "amVjdFR5cGUSCAoETk9ORRAAEgoKBlBMQVlFUhABEgsKB01PTlNURVIQAipa",
+            "ChFQbGF5ZXJTZXJ2ZXJTdGF0ZRIWChJTRVJWRVJfU1RBVEVfTE9HSU4QABIW",
+            "ChJTRVJWRVJfU1RBVEVfTE9CQlkQARIVChFTRVJWRVJfU1RBVEVfR0FNRRAC",
+            "KmMKCEl0ZW1UeXBlEhIKDklURU1fVFlQRV9OT05FEAASFAoQSVRFTV9UWVBF",
+            "X1dFQVBPThABEhMKD0lURU1fVFlQRV9BUk1PUhACEhgKFElURU1fVFlQRV9D",
+            "T05TVU1BQkxFEAMqTgoKV2VhcG9uVHlwZRIUChBXRUFQT05fVFlQRV9OT05F",
+            "EAASFQoRV0VBUE9OX1RZUEVfU1dPUkQQARITCg9XRUFQT05fVFlQRV9CT1cQ",
+            "AipjCglBcm1vclR5cGUSEwoPQVJNT1JfVFlQRV9OT05FEAASFQoRQVJNT1Jf",
+            "VFlQRV9IRUxNRVQQARIUChBBUk1PUl9UWVBFX0FSTU9SEAISFAoQQVJNT1Jf",
+            "VFlQRV9CT09UUxADKkYKDkNvbnN1bWFibGVUeXBlEhgKFENPTlNVTUFCTEVf",
+            "VFlQRV9OT05FEAASGgoWQ09OU1VNQUJMRV9UWVBFX1BPVElPThABQhuqAhhH",
+            "b29nbGUuUHJvdG9idWYuUHJvdG9jb2xiBnByb3RvMw=="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(new[] {typeof(global::Google.Protobuf.Protocol.MsgId), typeof(global::Google.Protobuf.Protocol.CreatureState), typeof(global::Google.Protobuf.Protocol.GameObjectType), typeof(global::Google.Protobuf.Protocol.PlayerServerState), typeof(global::Google.Protobuf.Protocol.ItemType), typeof(global::Google.Protobuf.Protocol.WeaponType), typeof(global::Google.Protobuf.Protocol.ArmorType), typeof(global::Google.Protobuf.Protocol.ConsumableType), }, null, new pbr::GeneratedClrTypeInfo[] {
@@ -143,8 +143,10 @@ namespace Google.Protobuf.Protocol {
   public enum CreatureState {
     [pbr::OriginalName("IDLE")] Idle = 0,
     [pbr::OriginalName("MOVING")] Moving = 1,
-    [pbr::OriginalName("SKILL")] Skill = 2,
-    [pbr::OriginalName("DEAD")] Dead = 3,
+    [pbr::OriginalName("JUMP")] Jump = 2,
+    [pbr::OriginalName("INAIR")] Inair = 3,
+    [pbr::OriginalName("SKILL")] Skill = 4,
+    [pbr::OriginalName("DEAD")] Dead = 5,
   }
 
   public enum GameObjectType {

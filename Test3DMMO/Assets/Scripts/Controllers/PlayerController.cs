@@ -90,27 +90,33 @@ public class PlayerController : CreatureController
         if (_animator == null)
             return;
 
+        Debug.Log(State);
+
         _animator.SetFloat(_animIDSpeed, _animationBlend);
         _animator.SetFloat(_animIDMotionSpeed, _inputMagnitude);
 
         if (State == CreatureState.Idle)
         {
-            _animator.Play(_animIDGrounded);
+            _animator.SetBool(_animIDGrounded, true);
+            _animator.SetBool(_animIDJump, false);
+            _animator.SetBool(_animIDFreeFall, false);
         }
-        /*
-        else if (State == CreatureState.Moving)
+        else if (State == CreatureState.Jump)
         {
-            _animator.SetFloat(_animIDSpeed, _animationBlend);
-            _animator.SetFloat(_animIDMotionSpeed, _inputMagnitude);
+            _animator.SetBool(_animIDJump, true);
         }
-        */
+        else if (State == CreatureState.Inair)
+        {
+            _animator.SetBool(_animIDFreeFall, true);
+        }
         else if (State == CreatureState.Skill)
         {
             _animator.SetTrigger(_animIDAttack);
         }
         else if (State == CreatureState.Dead)
         {
-
+            _animator.SetBool(_animIDDead, true);
         }
+        
     }
 }

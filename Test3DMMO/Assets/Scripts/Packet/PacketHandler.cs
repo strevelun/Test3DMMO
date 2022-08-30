@@ -58,8 +58,14 @@ public class PacketHandler : MonoBehaviour
 
 		PlayerController controller = p.GetComponent<PlayerController>();
 		controller.State = movePacket.State;
+
+		
+
+		// TODO to property
 		controller._animationBlend = movePacket.AnimationBlend;
-		controller._inputMagnitude = movePacket.InputMagnitude;	
+		controller._inputMagnitude = movePacket.InputMagnitude;
+
+		
 	}
 
 	public static void S_ChangeHpHandler(PacketSession session, IMessage packet)

@@ -49,6 +49,7 @@ public class CreatureController : MonoBehaviour
         set
         {
             _creatureState = value;
+            
             UpdateAnimation();
         }
     }
@@ -59,6 +60,7 @@ public class CreatureController : MonoBehaviour
     protected int _animIDFreeFall;
     protected int _animIDMotionSpeed;
     protected int _animIDAttack;
+    protected int _animIDDead;
 
     public float _animationBlend;
     public float _inputMagnitude;
@@ -71,6 +73,7 @@ public class CreatureController : MonoBehaviour
         _animIDFreeFall = Animator.StringToHash("FreeFall");
         _animIDMotionSpeed = Animator.StringToHash("MotionSpeed");
         _animIDAttack = Animator.StringToHash("Attack");
+        _animIDDead = Animator.StringToHash("Dead");
     }
 
     protected bool _hasAnimator;
@@ -90,7 +93,7 @@ public class CreatureController : MonoBehaviour
     void Update()
     {
 
-        _hasAnimator = transform.GetChild(0).TryGetComponent(out _animator);
+        _hasAnimator = transform.GetChild(1).TryGetComponent(out _animator);
     }
 
     protected virtual void UpdateAnimation()
@@ -115,5 +118,6 @@ public class CreatureController : MonoBehaviour
         {
 
         }
+        
     }
 }

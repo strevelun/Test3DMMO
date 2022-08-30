@@ -63,6 +63,14 @@ public class MyPlayerController : PlayerController
         GroundedCheck();
         Move();
         Attack();
+        CheckDead();
+        SendPacket();
+    }
+
+    private void CheckDead()
+    {
+        // Dead 모션 테스트
+        //State = CreatureState.Dead;
     }
 
     protected override void Init()
@@ -91,7 +99,7 @@ public class MyPlayerController : PlayerController
         {
             if (_hasAnimator)
             {
-                _animator.SetTrigger(_animIDAttack);
+                State = CreatureState.Skill;
             }
             _input.attack = false;
         }
@@ -140,8 +148,6 @@ public class MyPlayerController : PlayerController
         if (_input.move == Vector2.zero)
         {
             targetSpeed = 0.0f; // 입력 없을 경우
-            State = CreatureState.Idle; // 버튼에서 손 떼는 순간 무조건 idle -> Idle 애니메이션 모션 재생됨
-            // idle 패킷?
         }
 
         float currentHorizontalSpeed = new Vector3(_controller.velocity.x, 0.0f, _controller.velocity.z).magnitude;
@@ -191,17 +197,17 @@ public class MyPlayerController : PlayerController
 
         WorldPos = transform.position;
 
-        C_Move movePacket = new C_Move();
-        movePacket.PosInfo = PosInfo;
-        movePacket.RotY = RotY;
-        movePacket.State = State;
-        movePacket.AnimationBlend = _animationBlend;
-        movePacket.InputMagnitude = _inputMagnitude;
-        Managers.Network.Send(movePacket);
+
+        if (State == CreatureState.Inair || State == CreatureState.Jump)
+            return;
 
         // 클라에서 입력 즉시 애니메이션 동작
         if (_input.move != Vector2.zero)
+        {
             State = CreatureState.Moving;
+        }
+        else
+            State = CreatureState.Idle; // 버튼에서 손 떼는 순간 무조건 idle -> Idle 애니메이션 모션 재생됨
     }
 
     private void JumpAndGravity()
@@ -212,8 +218,7 @@ public class MyPlayerController : PlayerController
 
             if (_hasAnimator)
             {
-                _animator.SetBool(_animIDJump, false);
-                _animator.SetBool(_animIDFreeFall, false);
+                State = CreatureState.Idle;
             }
 
             // stop our velocity dropping infinitely when grounded
@@ -229,10 +234,8 @@ public class MyPlayerController : PlayerController
 
                 if (_hasAnimator)
                 {
-                    _animator.SetBool(_animIDJump, true);
+                    State = CreatureState.Jump;
                 }
-
-
             }
 
             if (_jumpTimeoutDelta > 0.0f)
@@ -252,7 +255,7 @@ public class MyPlayerController : PlayerController
             {
                 if (_hasAnimator)
                 {
-                    _animator.SetBool(_animIDFreeFall, true);
+                    State = CreatureState.Inair;
                 }
             }
 
@@ -322,5 +325,16 @@ public class MyPlayerController : PlayerController
     private void OnControllerColliderHit(ControllerColliderHit hit)
     {
         if (_canPush) PushRigidBodies(hit);
+    }
+
+    private void SendPacket()
+    {
+        C_Move movePacket = new C_Move();
+        movePacket.PosInfo = PosInfo;
+        movePacket.RotY = RotY;
+        movePacket.State = State;
+        movePacket.AnimationBlend = _animationBlend;
+        movePacket.InputMagnitude = _inputMagnitude;
+        Managers.Network.Send(movePacket);
     }
 }
