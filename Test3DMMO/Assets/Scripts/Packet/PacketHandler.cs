@@ -22,9 +22,9 @@ public class PacketHandler : MonoBehaviour
 		}
 	}
 
-	#region pending
-	
-    public static void S_LeaveGameHandler(PacketSession session, IMessage packet)
+	#region pended
+
+	public static void S_LeaveGameHandler(PacketSession session, IMessage packet)
 	{
 		S_LeaveGame leaveGameHandler = packet as S_LeaveGame;
 		Managers.Object.Clear();
@@ -49,6 +49,17 @@ public class PacketHandler : MonoBehaviour
 
 		if (Managers.Object.MyPlayer.Id == movePacket.ObjectId)
 			return;
+
+		GameObject p = Managers.Object.FindById(movePacket.ObjectId);
+		p.transform.position = new Vector3(movePacket.PosInfo.PosX, movePacket.PosInfo.PosY, movePacket.PosInfo.PosZ);
+		p.transform.rotation = Quaternion.Euler(p.transform.rotation.x, movePacket.RotY, p.transform.rotation.z);
+
+		// State와 Blend 값 업데이트하고 UpdateAnimation
+
+		PlayerController controller = p.GetComponent<PlayerController>();
+		controller.State = movePacket.State;
+		controller._animationBlend = movePacket.AnimationBlend;
+		controller._inputMagnitude = movePacket.InputMagnitude;	
 	}
 
 	public static void S_ChangeHpHandler(PacketSession session, IMessage packet)
@@ -87,9 +98,9 @@ public class PacketHandler : MonoBehaviour
 		Debug.Log("S_ConnectedHandler");
 		C_Login loginPacket = new C_Login();
 
-		//string path = Application.dataPath;
-		//loginPacket.UniqueId = path.GetHashCode().ToString();
-		//Managers.Network.Send(loginPacket);
+		string path = Application.dataPath;
+		loginPacket.UniqueId = path.GetHashCode().ToString();
+		Managers.Network.Send(loginPacket);
 	}
 
 	// 로그인 OK + 캐릭터 목록
@@ -98,40 +109,40 @@ public class PacketHandler : MonoBehaviour
 		S_Login loginPacket = (S_Login)packet;
 		Debug.Log($"LoginOk({loginPacket.LoginOk})");
 
-		//// TODO : 로비 UI에서 캐릭터 보여주고, 선택할 수 있도록
-		//if (loginPacket.Players == null || loginPacket.Players.Count == 0)
-		//{
-		//	C_CreatePlayer createPacket = new C_CreatePlayer();
-		//	createPacket.Name = $"Player_{Random.Range(0, 10000).ToString("0000")}";
-		//	Managers.Network.Send(createPacket);
-		//}
-		//else
-		//{
-		//	// 무조건 첫번째 로그인
-		//	LobbyPlayerInfo info = loginPacket.Players[0];
-		//	C_EnterGame enterGamePacket = new C_EnterGame();
-		//	enterGamePacket.Name = info.Name;
-		//	Managers.Network.Send(enterGamePacket);
-		//}
-	}
+        // TODO : 로비 UI에서 캐릭터 보여주고, 선택할 수 있도록
+        if (loginPacket.Players == null || loginPacket.Players.Count == 0)
+        {
+            C_CreatePlayer createPacket = new C_CreatePlayer();
+            createPacket.Name = $"Player_{Random.Range(0, 10000).ToString("0000")}";
+            Managers.Network.Send(createPacket);
+        }
+        else
+        {
+            // 무조건 첫번째 로그인
+            LobbyPlayerInfo info = loginPacket.Players[0];
+            C_EnterGame enterGamePacket = new C_EnterGame();
+            enterGamePacket.Name = info.Name;
+            Managers.Network.Send(enterGamePacket);
+        }
+    }
 
 	public static void S_CreatePlayerHandler(PacketSession session, IMessage packet)
 	{
 		S_CreatePlayer createOkPacket = (S_CreatePlayer)packet;
 
-		//if (createOkPacket.Player == null)
-		//{
-		//	C_CreatePlayer createPacket = new C_CreatePlayer();
-		//	createPacket.Name = $"Player_{Random.Range(0, 10000).ToString("0000")}";
-		//	Managers.Network.Send(createPacket);
-		//}
-		//else
-		//{
-		//	C_EnterGame enterGamePacket = new C_EnterGame();
-		//	enterGamePacket.Name = createOkPacket.Player.Name;
-		//	Managers.Network.Send(enterGamePacket);
-		//}
-	}
+        if (createOkPacket.Player == null)
+        {
+            C_CreatePlayer createPacket = new C_CreatePlayer();
+            createPacket.Name = $"Player_{Random.Range(0, 10000).ToString("0000")}";
+            Managers.Network.Send(createPacket);
+        }
+        else
+        {
+            C_EnterGame enterGamePacket = new C_EnterGame();
+            enterGamePacket.Name = createOkPacket.Player.Name;
+            Managers.Network.Send(enterGamePacket);
+        }
+    }
 
 	public static void S_ItemListHandler(PacketSession session, IMessage packet)
 	{

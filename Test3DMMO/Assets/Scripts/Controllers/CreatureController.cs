@@ -16,16 +16,18 @@ public class CreatureController : MonoBehaviour
             if (_positionInfo.Equals(value))
                 return;
 
-            WorldPos = new Vector3Int(value.PosX, value.PosY, value.PosZ);
+            WorldPos = new Vector3(value.PosX, value.PosY, value.PosZ);
             // State = value.State;
         }
     }
 
-    public Vector3Int WorldPos
+    public float RotY { get; protected set; }
+
+    public Vector3 WorldPos
     {
         get
         {
-            return new Vector3Int(PosInfo.PosX, PosInfo.PosY, PosInfo.PosZ);
+            return new Vector3(PosInfo.PosX, PosInfo.PosY, PosInfo.PosZ);
         }
 
         set
@@ -40,13 +42,26 @@ public class CreatureController : MonoBehaviour
         }
     }
 
-    // animation IDs
+    CreatureState _creatureState;   
+    public virtual CreatureState State
+    {
+        get { return _creatureState; }  
+        set
+        {
+            _creatureState = value;
+            UpdateAnimation();
+        }
+    }
+
     protected int _animIDSpeed;
     protected int _animIDGrounded;
     protected int _animIDJump;
     protected int _animIDFreeFall;
     protected int _animIDMotionSpeed;
     protected int _animIDAttack;
+
+    public float _animationBlend;
+    public float _inputMagnitude;
 
     private void AssignAnimationIDs()
     {
@@ -63,7 +78,7 @@ public class CreatureController : MonoBehaviour
 
     protected virtual void Init()
     {
-        _hasAnimator = transform.GetChild(0).TryGetComponent(out _animator);
+        _hasAnimator = transform.GetChild(1).TryGetComponent(out _animator);
         AssignAnimationIDs();
     }
 
@@ -76,5 +91,29 @@ public class CreatureController : MonoBehaviour
     {
 
         _hasAnimator = transform.GetChild(0).TryGetComponent(out _animator);
+    }
+
+    protected virtual void UpdateAnimation()
+    {
+        if (_animator == null)
+            return;
+
+        Debug.Log("CreatureController에서 호출");
+
+        _animator.SetFloat(_animIDSpeed, _animationBlend);
+        _animator.SetFloat(_animIDMotionSpeed, _inputMagnitude);
+
+        if (State == CreatureState.Idle)
+        {
+            _animator.Play(_animIDGrounded);
+        }
+        else if (State == CreatureState.Skill)
+        {
+
+        }
+        else if (State == CreatureState.Dead)
+        {
+
+        }
     }
 }

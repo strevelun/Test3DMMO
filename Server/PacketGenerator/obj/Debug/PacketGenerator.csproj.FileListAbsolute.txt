@@ -44,3 +44,4 @@ C:\Users\fere1\Documents\GitHub\Test3DMMO\Server\PacketGenerator\obj\Debug\Packe
 C:\Users\fere1\Documents\GitHub\Test3DMMO\Server\PacketGenerator\obj\Debug\PacketGenerator.dll
 C:\Users\fere1\Documents\GitHub\Test3DMMO\Server\PacketGenerator\obj\Debug\PacketGenerator.pdb
 C:\Users\fere1\Documents\GitHub\Test3DMMO\Server\PacketGenerator\obj\Debug\PacketGenerator.genruntimeconfig.cache
+C:\Users\fere1\Documents\GitHub\Test3DMMO\Server\PacketGenerator\bin\Newtonsoft.Json.dll

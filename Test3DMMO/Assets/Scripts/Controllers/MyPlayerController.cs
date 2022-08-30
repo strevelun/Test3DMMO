@@ -1,3 +1,5 @@
+using Cinemachine;
+using Google.Protobuf.Protocol;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -5,6 +7,8 @@ using UnityEngine.InputSystem;
 
 public class MyPlayerController : PlayerController
 {
+    private CinemachineVirtualCamera _playerFollowCamera;
+
     private PlayerInput _playerInput;
 
     private CharacterController _controller;
@@ -22,7 +26,6 @@ public class MyPlayerController : PlayerController
 
     // player
     private float _speed;
-    private float _animationBlend;
     private float _targetRotation = 0.0f;
     private float _rotationVelocity;
     private float _verticalVelocity;
@@ -31,6 +34,7 @@ public class MyPlayerController : PlayerController
     // timeout deltatime
     private float _jumpTimeoutDelta;
     private float _fallTimeoutDelta;
+    
 
     private bool IsCurrentDeviceMouse
     {
@@ -65,6 +69,9 @@ public class MyPlayerController : PlayerController
     {
         base.Init();
 
+        _playerFollowCamera = FindObjectOfType<CinemachineVirtualCamera>();
+        _playerFollowCamera.GetComponent<CinemachineVirtualCamera>().Follow = transform.Find("PlayerCameraRoot").transform;
+
         _cinemachineTargetYaw = CinemachineCameraTarget.transform.rotation.eulerAngles.y;
         _controller = GetComponent<CharacterController>();
         _input = GetComponent<PlayerInputSystem>();
@@ -74,6 +81,8 @@ public class MyPlayerController : PlayerController
 
         _jumpTimeoutDelta = _jumpTimeout;
         _fallTimeoutDelta = _fallTimeout;
+
+        WorldPos = transform.position;
     }
 
     void Attack()
@@ -86,6 +95,15 @@ public class MyPlayerController : PlayerController
             }
             _input.attack = false;
         }
+    }
+
+    IEnumerator CoStartPunch()
+    {
+        State = CreatureState.Skill;
+        yield return new WaitForSeconds(0.5f);
+        State = CreatureState.Idle;
+
+        //_coSkill = StartCoroutine("CoStartPunch");
     }
 
     private static float ClampAngle(float lfAngle, float lfMin, float lfMax)
@@ -119,17 +137,22 @@ public class MyPlayerController : PlayerController
     {
         float targetSpeed = _input.sprint ? _sprintSpeed : _moveSpeed;
 
-        if (_input.move == Vector2.zero) targetSpeed = 0.0f; // 입력 없을 경우
+        if (_input.move == Vector2.zero)
+        {
+            targetSpeed = 0.0f; // 입력 없을 경우
+            State = CreatureState.Idle; // 버튼에서 손 떼는 순간 무조건 idle -> Idle 애니메이션 모션 재생됨
+            // idle 패킷?
+        }
 
         float currentHorizontalSpeed = new Vector3(_controller.velocity.x, 0.0f, _controller.velocity.z).magnitude;
 
         float speedOffset = 0.1f;
-        float inputMagnitude = _input.analogMovement ? _input.move.magnitude : 1f;
+        _inputMagnitude = _input.analogMovement ? _input.move.magnitude : 1f;
 
         if (currentHorizontalSpeed < targetSpeed - speedOffset ||
             currentHorizontalSpeed > targetSpeed + speedOffset)
         {
-            _speed = Mathf.Lerp(currentHorizontalSpeed, targetSpeed * inputMagnitude,
+            _speed = Mathf.Lerp(currentHorizontalSpeed, targetSpeed * _inputMagnitude,
                 Time.deltaTime * _speedChangeRate);
 
             _speed = Mathf.Round(_speed * 1000f) / 1000f;
@@ -140,7 +163,9 @@ public class MyPlayerController : PlayerController
         }
 
         _animationBlend = Mathf.Lerp(_animationBlend, targetSpeed, Time.deltaTime * _speedChangeRate);
-        if (_animationBlend < 0.01f) _animationBlend = 0f;
+
+        if (_animationBlend < 0.01f) 
+            _animationBlend = 0f;
 
         Vector3 inputDirection = new Vector3(_input.move.x, 0.0f, _input.move.y).normalized;
 
@@ -153,18 +178,30 @@ public class MyPlayerController : PlayerController
 
             // rotate to face input direction relative to camera position
             transform.rotation = Quaternion.Euler(0.0f, rotation, 0.0f);
+
+            RotY = rotation;
         }
 
         Vector3 targetDirection = Quaternion.Euler(0.0f, _targetRotation, 0.0f) * Vector3.forward;
 
-        _controller.Move(targetDirection.normalized * (_speed * Time.deltaTime) +
-                         new Vector3(0.0f, _verticalVelocity, 0.0f) * Time.deltaTime);
+        Vector3 result = targetDirection.normalized * (_speed * Time.deltaTime) +
+                         new Vector3(0.0f, _verticalVelocity, 0.0f) * Time.deltaTime;
 
-        if (_hasAnimator)
-        {
-            _animator.SetFloat(_animIDSpeed, _animationBlend);
-            _animator.SetFloat(_animIDMotionSpeed, inputMagnitude);
-        }
+        _controller.Move(result);
+
+        WorldPos = transform.position;
+
+        C_Move movePacket = new C_Move();
+        movePacket.PosInfo = PosInfo;
+        movePacket.RotY = RotY;
+        movePacket.State = State;
+        movePacket.AnimationBlend = _animationBlend;
+        movePacket.InputMagnitude = _inputMagnitude;
+        Managers.Network.Send(movePacket);
+
+        // 클라에서 입력 즉시 애니메이션 동작
+        if (_input.move != Vector2.zero)
+            State = CreatureState.Moving;
     }
 
     private void JumpAndGravity()
@@ -194,6 +231,8 @@ public class MyPlayerController : PlayerController
                 {
                     _animator.SetBool(_animIDJump, true);
                 }
+
+
             }
 
             if (_jumpTimeoutDelta > 0.0f)

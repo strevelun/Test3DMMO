@@ -1,3 +1,4 @@
+using Google.Protobuf.Protocol;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -38,12 +39,17 @@ public class PlayerController : CreatureController
     public float _bottomClamp = -30.0f; // 카메라 최소각
 
 
+    protected Coroutine _coSkill;
+
+
 
     protected override void Init()
     {
         base.Init();
 
-
+        if (!_hasAnimator)
+            _hasAnimator = transform.TryGetComponent(out _animator);
+        UpdateAnimation();
     }
 
     void Start()
@@ -53,7 +59,7 @@ public class PlayerController : CreatureController
 
     private void Update()
     {
-
+        UpdateAnimation();
     }
 
     protected virtual void Move()
@@ -69,7 +75,6 @@ public class PlayerController : CreatureController
         if (_grounded) Gizmos.color = transparentGreen;
         else Gizmos.color = transparentRed;
 
-        // when selected, draw a gizmo in the position of, and matching radius of, the grounded collider
         Gizmos.DrawSphere(
             new Vector3(transform.position.x, transform.position.y - _groundedOffset, transform.position.z),
             _groundedRadius);
@@ -78,5 +83,34 @@ public class PlayerController : CreatureController
     protected virtual void PushRigidBodies(ControllerColliderHit hit)
     {
         
+    }
+
+    protected override void UpdateAnimation()
+    {
+        if (_animator == null)
+            return;
+
+        _animator.SetFloat(_animIDSpeed, _animationBlend);
+        _animator.SetFloat(_animIDMotionSpeed, _inputMagnitude);
+
+        if (State == CreatureState.Idle)
+        {
+            _animator.Play(_animIDGrounded);
+        }
+        /*
+        else if (State == CreatureState.Moving)
+        {
+            _animator.SetFloat(_animIDSpeed, _animationBlend);
+            _animator.SetFloat(_animIDMotionSpeed, _inputMagnitude);
+        }
+        */
+        else if (State == CreatureState.Skill)
+        {
+            _animator.SetTrigger(_animIDAttack);
+        }
+        else if (State == CreatureState.Dead)
+        {
+
+        }
     }
 }

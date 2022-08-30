@@ -55,33 +55,34 @@ namespace Server.Game
 		}
 	}
 
-	public struct Vector2Int
+	public struct Vector3
 	{
-		public int x;
-		public int y;
+		public float x;
+		public float y;
+		public float z;
 
-		public Vector2Int(int x, int y) { this.x = x; this.y = y; }
+		public Vector3(float x, float y, float z) { this.x = x; this.y = y;  this.z = z; }
 
-		public static Vector2Int up { get { return new Vector2Int(0, 1); } }
-		public static Vector2Int down { get { return new Vector2Int(0, -1); } }
-		public static Vector2Int left { get { return new Vector2Int(-1, 0); } }
-		public static Vector2Int right { get { return new Vector2Int(1, 0); } }
+		public static Vector3 up { get { return new Vector3(0, 1, 0); } }
+		public static Vector3 down { get { return new Vector3(0, -1, 0); } }
+		public static Vector3 left { get { return new Vector3(-1, 0, 0); } }
+		public static Vector3 right { get { return new Vector3(1, 0, 0); } }
 
-		public static Vector2Int operator+(Vector2Int a, Vector2Int b)
+		public static Vector3 operator +(Vector3 a, Vector3 b)
 		{
-			return new Vector2Int(a.x + b.x, a.y + b.y);
+			return new Vector3(a.x + b.x, a.y + b.y, a.z + b.z);
 		}
 
-		public static Vector2Int operator -(Vector2Int a, Vector2Int b)
+		public static Vector3 operator -(Vector3 a, Vector3 b)
 		{
-			return new Vector2Int(a.x - b.x, a.y - b.y);
+			return new Vector3(a.x - b.x, a.y - b.y, a.z - b.z);
 		}
 
 		public float magnitude { get { return (float)Math.Sqrt(sqrMagnitude); } }
-		public int sqrMagnitude { get { return (x * x + y * y); } }
-		public int cellDistFromZero { get { return Math.Abs(x) + Math.Abs(y); } }
+		public float sqrMagnitude { get { return (x * x + y * y); } }
+		public float cellDistFromZero { get { return Math.Abs(x) + Math.Abs(y); } }
 	}
-
+	/*
 	public class Map
 	{
 		public int MinX { get; set; }
@@ -95,27 +96,14 @@ namespace Server.Game
 		bool[,] _collision;
 		GameObject[,] _objects;
 
-		public bool CanGo(Vector2Int cellPos, bool checkObjects = true)
-		{
-			if (cellPos.x < MinX || cellPos.x > MaxX)
-				return false;
-			if (cellPos.y < MinY || cellPos.y > MaxY)
-				return false;
 
-			int x = cellPos.x - MinX;
-			int y = MaxY - cellPos.y;
-			return !_collision[y, x] && (!checkObjects || _objects[y, x] == null);
-		}
-
-		public GameObject Find(Vector2Int cellPos)
+		public GameObject Find(Vector3 cellPos)
 		{
 			if (cellPos.x < MinX || cellPos.x > MaxX)
 				return null;
 			if (cellPos.y < MinY || cellPos.y > MaxY)
 				return null;
 
-			int x = cellPos.x - MinX;
-			int y = MaxY - cellPos.y;
 			return _objects[y, x];
 		}
 
@@ -384,5 +372,5 @@ namespace Server.Game
 
 		#endregion
 	}
-
+	*/
 }

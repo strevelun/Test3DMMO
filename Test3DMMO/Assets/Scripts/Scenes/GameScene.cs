@@ -12,6 +12,8 @@ public class GameScene : BaseScene
 
         SceneType = Define.Scene.Game;
 
+        Cursor.visible = true;
+
         Screen.SetResolution(640, 480, false);
     }
 

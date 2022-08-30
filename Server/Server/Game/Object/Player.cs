@@ -1,7 +1,6 @@
 ﻿using Google.Protobuf.Protocol;
 using Microsoft.EntityFrameworkCore;
 using Server.DB;
-using Server.Game.Room;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -12,7 +11,6 @@ namespace Server.Game
 	{
 		public int PlayerDbId { get; set; }
 		public ClientSession Session { get; set; }
-		public VisionCube Vision { get; private set; }
 
 		public Inventory Inven { get; private set; } = new Inventory();
 
@@ -22,10 +20,26 @@ namespace Server.Game
 		public override int TotalAttack { get { return Stat.Attack + WeaponDamage; } }
 		public override int TotalDefence { get { return ArmorDefence; } }
 
+		public float RotY { get; set; }
+
+		public Vector3 Pos
+		{
+			get
+			{
+				return new Vector3(PosInfo.PosX, PosInfo.PosY, PosInfo.PosZ);
+			}
+
+			set
+			{
+				PosInfo.PosX = value.x;
+				PosInfo.PosY = value.y;
+				PosInfo.PosZ = value.z;
+			}
+		}
+
 		public Player()
 		{
 			ObjectType = GameObjectType.Player;
-			Vision = new VisionCube(this);
 		}
 
 		public override void OnDamaged(GameObject attacker, int damage)

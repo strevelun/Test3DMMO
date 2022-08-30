@@ -10,7 +10,7 @@ namespace Server.Game
 		public static ObjectManager Instance { get; } = new ObjectManager();
 
 		object _lock = new object();
-		Dictionary<int, Player> _players = new Dictionary<int, Player>();
+		public Dictionary<int, Player> Players { get; private set; } = new Dictionary<int, Player>();
 
 		// [UNUSED(1)][TYPE(7)][ID(24)]
 		int _counter = 0;
@@ -25,7 +25,7 @@ namespace Server.Game
 
 				if (gameObject.ObjectType == GameObjectType.Player)
 				{
-					_players.Add(gameObject.Id, gameObject as Player);
+					Players.Add(gameObject.Id, gameObject as Player);
 				}
 			}
 
@@ -53,7 +53,7 @@ namespace Server.Game
 			lock (_lock)
 			{
 				if (objectType == GameObjectType.Player)
-					return _players.Remove(objectId);
+					return Players.Remove(objectId);
 			}
 
 			return false;
@@ -68,7 +68,7 @@ namespace Server.Game
 				if (objectType == GameObjectType.Player)
 				{
 					Player player = null;
-					if (_players.TryGetValue(objectId, out player))
+					if (Players.TryGetValue(objectId, out player))
 						return player;
 				}
 			}

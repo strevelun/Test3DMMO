@@ -101,7 +101,7 @@ namespace Server
 			{
 				MyPlayer.PlayerDbId = playerInfo.PlayerDbId;
 				MyPlayer.Info.Name = playerInfo.Name;
-				MyPlayer.Info.PosInfo.State = CreatureState.Idle;
+				MyPlayer.State = CreatureState.Idle;
 				MyPlayer.Info.PosInfo.PosX = 0;
 				MyPlayer.Info.PosInfo.PosY = 0;
 				MyPlayer.Stat.MergeFrom(playerInfo.StatInfo);
@@ -138,7 +138,7 @@ namespace Server
 			GameLogic.Instance.Push(() =>
 			{
 				GameRoom room = GameLogic.Instance.Find(1);
-				room.Push(room.EnterGame, MyPlayer, true);
+				room.Push(room.EnterGame, MyPlayer);
 			});
 		}
 

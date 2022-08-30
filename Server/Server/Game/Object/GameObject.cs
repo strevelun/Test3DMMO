@@ -24,6 +24,9 @@ namespace Server.Game
 		public virtual int TotalAttack { get { return Stat.Attack; } }
 		public virtual int TotalDefence { get { return 0; } }
 
+		public float _animationBlend;
+		public float _inputMagnitude;
+
 		public float Speed
 		{
 			get { return Stat.Speed; }
@@ -38,9 +41,11 @@ namespace Server.Game
 
 		public CreatureState State
 		{
-			get { return PosInfo.State; }
-			set { PosInfo.State = value; }
+			get;
+			set;
 		}
+
+
 
 		public GameObject()
 		{
@@ -51,20 +56,6 @@ namespace Server.Game
 		public virtual void Update()
 		{
 
-		}
-
-		public Vector2Int CellPos
-		{
-			get
-			{
-				return new Vector2Int(PosInfo.PosX, PosInfo.PosY);
-			}
-
-			set
-			{
-				PosInfo.PosX = value.x;
-				PosInfo.PosY = value.y;
-			}
 		}
 
 		public virtual void OnDamaged(GameObject attacker, int damage)
@@ -78,7 +69,7 @@ namespace Server.Game
 			S_ChangeHp changePacket = new S_ChangeHp();
 			changePacket.ObjectId = Id;
 			changePacket.Hp = Stat.Hp;
-			Room.Broadcast(CellPos, changePacket);
+			Room.Broadcast(changePacket);
 
 			if (Stat.Hp <= 0)
 			{
@@ -94,15 +85,15 @@ namespace Server.Game
 			S_Die diePacket = new S_Die();
 			diePacket.ObjectId = Id;
 			diePacket.AttackerId = attacker.Id;
-			Room.Broadcast(CellPos, diePacket);
+			Room.Broadcast(diePacket);
 
 			GameRoom room = Room;
 			room.LeaveGame(Id);
 
 			Stat.Hp = Stat.MaxHp;
-			PosInfo.State = CreatureState.Idle;
+			State = CreatureState.Idle;
 
-			room.EnterGame(this, randomPos: true);
+			room.EnterGame(this);
 		}
 
 		public virtual GameObject GetOwner()

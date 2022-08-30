@@ -28,11 +28,13 @@ public class ObjectManager
 		{
 			if (myPlayer)
 			{
+				GameObject root = Managers.Resource.Instantiate("Character/Player");
 				GameObject go = Managers.Resource.Instantiate("Character/Beginner");
-				go.name = info.Name;
-				_objects.Add(info.ObjectId, go);
+				go.transform.parent = root.transform;
+				root.name = info.Name;
+				_objects.Add(info.ObjectId, root);
 
-				MyPlayer = go.GetComponent<MyPlayerController>();
+				MyPlayer = Util.GetOrAddComponent<MyPlayerController>(root);
 				MyPlayer.Id = info.ObjectId;
 				MyPlayer.PosInfo = info.PosInfo;
 			}
@@ -42,9 +44,11 @@ public class ObjectManager
 				go.name = info.Name;
 				_objects.Add(info.ObjectId, go);
 
-				PlayerController pc = go.GetComponent<PlayerController>();
+				PlayerController pc = Util.GetOrAddComponent<PlayerController>(go);
 				pc.Id = info.ObjectId;
 				pc.PosInfo = info.PosInfo;
+
+				go.transform.position = new Vector3(info.PosInfo.PosX, info.PosInfo.PosY, info.PosInfo.PosZ);
 			}
 		}
 	}

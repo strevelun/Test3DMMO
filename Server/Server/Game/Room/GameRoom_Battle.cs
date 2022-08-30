@@ -9,31 +9,35 @@ namespace Server.Game
 {
 	public partial class GameRoom : JobSerializer
 	{
+
 		public void HandleMove(Player player, C_Move movePacket)
 		{
 			if (player == null)
 				return;
 
-			// TODO : 검증
+			// TODO : 검증... 현재 플레이어의 위치가 잘못된 곳에 있을 경우?
 			PositionInfo movePosInfo = movePacket.PosInfo;
+
 			ObjectInfo info = player.Info;
 
-			// 다른 좌표로 이동할 경우, 갈 수 있는지 체크
-			if (movePosInfo.PosX != info.PosInfo.PosX || movePosInfo.PosY != info.PosInfo.PosY)
-			{
-				if (Map.CanGo(new Vector2Int(movePosInfo.PosX, movePosInfo.PosY)) == false)
-					return;
-			}
+			// 서버에서 플레이어 좌표 수정
+			Player p = ObjectManager.Instance.Find(info.ObjectId);
+			p.Pos = new Vector3(movePosInfo.PosX, movePosInfo.PosY, movePosInfo.PosZ);
+			p.RotY = movePacket.RotY;
+			p.State = movePacket.State;
+			p._animationBlend = movePacket.AnimationBlend;
+			p._inputMagnitude = movePacket.InputMagnitude;
 
-			info.PosInfo.State = movePosInfo.State;
-			Map.ApplyMove(player, new Vector2Int(movePosInfo.PosX, movePosInfo.PosY));
-
-			// 다른 플레이어한테도 알려준다
+			// 브로드캐스팅
 			S_Move resMovePacket = new S_Move();
 			resMovePacket.ObjectId = player.Info.ObjectId;
 			resMovePacket.PosInfo = movePacket.PosInfo;
+			resMovePacket.RotY = movePacket.RotY;	
+			resMovePacket.State = movePacket.State;
+			resMovePacket.AnimationBlend = movePacket.AnimationBlend;	
+			resMovePacket.InputMagnitude = movePacket.InputMagnitude;	
 
-			Broadcast(player.CellPos, resMovePacket);
+			Broadcast(resMovePacket);
 		}
 		/*
 		public void HandleSkill(Player player, C_Skill skillPacket)
