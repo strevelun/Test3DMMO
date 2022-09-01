@@ -79,7 +79,7 @@ CharacterController:
   m_Height: 1.4
   m_Radius: 0.5
   m_SlopeLimit: 45
-  m_StepOffset: 0.3
+  m_StepOffset: 0.2
   m_SkinWidth: 0.08
   m_MinMoveDistance: 0.001
   m_Center: {x: 0, y: 0.78, z: 0}
@@ -125,6 +125,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fd4717560d3a5db4baf246e433ceda3e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _animationBlend: 0
+  _inputMagnitude: 0
   _moveSpeed: 5
   _sprintSpeed: 10
   _rotationSmoothTime: 0.12
@@ -140,7 +142,7 @@ MonoBehaviour:
   _canPush: 0
   _strength: 1.1
   _grounded: 1
-  _groundedOffset: -0.14
+  _groundedOffset: -0.25
   _groundedRadius: 0.33
   GroundLayers:
     serializedVersion: 2

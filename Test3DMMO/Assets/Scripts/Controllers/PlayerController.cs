@@ -29,7 +29,7 @@ public class PlayerController : CreatureController
 
     [Header("플레이어 지면 체크")]
     public bool _grounded = true;
-    public float _groundedOffset = -0.14f; // 울퉁불퉁한 지면에서 유용
+    public float _groundedOffset = -0.28f; // 울퉁불퉁한 지면에서 유용
     public float _groundedRadius = 0.33f; // grounded check의 반지름. 캐릭터 컨트롤러의 반지름과 일치해야 함
     public LayerMask GroundLayers;
 
@@ -40,6 +40,7 @@ public class PlayerController : CreatureController
 
 
     protected Coroutine _coSkill;
+    protected float _lastYPos;
 
 
 
@@ -90,24 +91,37 @@ public class PlayerController : CreatureController
         if (_animator == null)
             return;
 
-        Debug.Log(State);
+        //Debug.Log(_grounded);
 
         _animator.SetFloat(_animIDSpeed, _animationBlend);
         _animator.SetFloat(_animIDMotionSpeed, _inputMagnitude);
 
-        if (State == CreatureState.Idle)
+
+        if (State == CreatureState.Inair)
+        {
+            _animator.SetBool(_animIDFreeFall, true);
+            _animator.SetBool(_animIDJump, false);
+            _animator.SetBool(_animIDGrounded, false);
+        }
+        else if (State == CreatureState.Jump)
+        {
+            _animator.SetBool(_animIDJump, true);
+            _animator.SetBool(_animIDGrounded, false);
+        }
+        else if (State == CreatureState.Idle)
         {
             _animator.SetBool(_animIDGrounded, true);
             _animator.SetBool(_animIDJump, false);
             _animator.SetBool(_animIDFreeFall, false);
         }
-        else if (State == CreatureState.Jump)
+        else if (State == CreatureState.Moving)
         {
-            _animator.SetBool(_animIDJump, true);
-        }
-        else if (State == CreatureState.Inair)
-        {
-            _animator.SetBool(_animIDFreeFall, true);
+            if (_grounded)
+            {
+                _animator.SetBool(_animIDJump, false);
+                _animator.SetBool(_animIDFreeFall, false);
+                _animator.SetBool(_animIDGrounded, true);
+            }
         }
         else if (State == CreatureState.Skill)
         {
@@ -117,6 +131,7 @@ public class PlayerController : CreatureController
         {
             _animator.SetBool(_animIDDead, true);
         }
+        
         
     }
 }

@@ -38,6 +38,8 @@ namespace Server.Game
 			resMovePacket.InputMagnitude = movePacket.InputMagnitude;	
 
 			Broadcast(resMovePacket);
+			
+			Console.WriteLine($"C_Move ({movePacket.PosInfo.PosX}, {movePacket.PosInfo.PosY}, {movePacket.PosInfo.PosZ}, {movePacket.RotY}, {movePacket.State}, {movePacket.AnimationBlend}, {movePacket.InputMagnitude})");
 		}
 		/*
 		public void HandleSkill(Player player, C_Skill skillPacket)

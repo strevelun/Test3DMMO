@@ -65,6 +65,8 @@ public class CreatureController : MonoBehaviour
     public float _animationBlend;
     public float _inputMagnitude;
 
+    protected bool _isIdle;
+
     private void AssignAnimationIDs()
     {
         _animIDSpeed = Animator.StringToHash("Speed");

@@ -62,9 +62,9 @@ public class MyPlayerController : PlayerController
         JumpAndGravity();
         GroundedCheck();
         Move();
+        Debug.Log(_grounded);
         Attack();
         CheckDead();
-        SendPacket();
     }
 
     private void CheckDead()
@@ -91,6 +91,9 @@ public class MyPlayerController : PlayerController
         _fallTimeoutDelta = _fallTimeout;
 
         WorldPos = transform.position;
+        
+        // move 테스트
+        _coSkill = StartCoroutine("CoStartPunch");
     }
 
     void Attack()
@@ -107,11 +110,7 @@ public class MyPlayerController : PlayerController
 
     IEnumerator CoStartPunch()
     {
-        State = CreatureState.Skill;
         yield return new WaitForSeconds(0.5f);
-        State = CreatureState.Idle;
-
-        //_coSkill = StartCoroutine("CoStartPunch");
     }
 
     private static float ClampAngle(float lfAngle, float lfMin, float lfMax)
@@ -197,17 +196,33 @@ public class MyPlayerController : PlayerController
 
         WorldPos = transform.position;
 
+        // 점프키 누르고 찰나의 순간 패킷 보내는 갭 줄이기
+        if (State == CreatureState.Jump)
+            SendMovePacket();
 
-        if (State == CreatureState.Inair || State == CreatureState.Jump)
+        if (!_grounded || State == CreatureState.Jump || State == CreatureState.Inair)
             return;
 
-        // 클라에서 입력 즉시 애니메이션 동작
-        if (_input.move != Vector2.zero)
+        if (_input.move == Vector2.zero)
         {
-            State = CreatureState.Moving;
+            /*
+            if(_isIdle == true)
+            {
+                Vector3 temp = transform.position;
+                temp.y = temp.y - _groundedOffset;
+                transform.position = temp;
+            }
+            */
+            State = CreatureState.Idle;
+            SendMovePacket();
+            _isIdle = true;
         }
         else
-            State = CreatureState.Idle; // 버튼에서 손 떼는 순간 무조건 idle -> Idle 애니메이션 모션 재생됨
+        {
+            State = CreatureState.Moving;
+            _isIdle = false;
+            SendMovePacket();
+        }
     }
 
     private void JumpAndGravity()
@@ -216,10 +231,6 @@ public class MyPlayerController : PlayerController
         {
             _fallTimeoutDelta = _fallTimeout;
 
-            if (_hasAnimator)
-            {
-                State = CreatureState.Idle;
-            }
 
             // stop our velocity dropping infinitely when grounded
             if (_verticalVelocity < 0.0f)
@@ -227,6 +238,8 @@ public class MyPlayerController : PlayerController
                 _verticalVelocity = -2f;
             }
 
+            
+                
             if (_input.jump && _jumpTimeoutDelta <= 0.0f)
             {
                 // the square root of H * -2 * G = how much velocity needed to reach desired height
@@ -235,8 +248,11 @@ public class MyPlayerController : PlayerController
                 if (_hasAnimator)
                 {
                     State = CreatureState.Jump;
+                    _isIdle = false;
+                    SendMovePacket();
                 }
             }
+
 
             if (_jumpTimeoutDelta > 0.0f)
             {
@@ -256,6 +272,8 @@ public class MyPlayerController : PlayerController
                 if (_hasAnimator)
                 {
                     State = CreatureState.Inair;
+                    _isIdle = false;
+                    SendMovePacket();
                 }
             }
 
@@ -278,15 +296,22 @@ public class MyPlayerController : PlayerController
     }
 
     private void GroundedCheck()
-    {
+    { 
         Vector3 spherePosition = new Vector3(transform.position.x, transform.position.y - _groundedOffset,
             transform.position.z);
         _grounded = Physics.CheckSphere(spherePosition, _groundedRadius, GroundLayers,
             QueryTriggerInteraction.Ignore);
+        
+   
+        if (State == CreatureState.Jump)
+            return;
 
         if (_hasAnimator)
         {
-            _animator.SetBool(_animIDGrounded, _grounded);
+            if (!_grounded)
+                State = CreatureState.Inair;
+            else
+                State = CreatureState.Idle;
         }
     }
 
@@ -327,8 +352,14 @@ public class MyPlayerController : PlayerController
         if (_canPush) PushRigidBodies(hit);
     }
 
-    private void SendPacket()
+    private void SendMovePacket()
     {
+        if (_isIdle && _animationBlend <= 0f)
+            return;
+
+       // if (State != CreatureState.Inair && !_grounded)
+       //     return;
+
         C_Move movePacket = new C_Move();
         movePacket.PosInfo = PosInfo;
         movePacket.RotY = RotY;
