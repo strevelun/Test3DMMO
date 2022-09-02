@@ -20,4 +20,12 @@
     <ProjectReference Include="..\ServerCore\ServerCore.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <EditorConfigFiles Remove="C:\Users\fere1\Documents\GitHub\Test3DMMO\Server\Server\.editorconfig" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="C:\Users\fere1\Documents\GitHub\Test3DMMO\Server\Server\.editorconfig" />
+  </ItemGroup>
+
 </Project>

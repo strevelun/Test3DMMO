@@ -51,6 +51,17 @@ public class ObjectManager
 				go.transform.position = new Vector3(info.PosInfo.PosX, info.PosInfo.PosY, info.PosInfo.PosZ);
 			}
 		}
+		else if (objectType == GameObjectType.Monster)
+		{
+			GameObject go = Managers.Resource.Instantiate("Creature/Slime_01_King");
+			go.name = info.Name;
+			_objects.Add(info.ObjectId, go);
+
+			MonsterController mc = go.GetComponent<MonsterController>();
+			mc.Id = info.ObjectId;
+			mc.PosInfo = info.PosInfo;
+			//mc.Stat = info.StatInfo;
+		}
 	}
 
 	public void Remove(int id)

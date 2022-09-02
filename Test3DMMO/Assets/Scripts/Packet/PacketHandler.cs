@@ -39,6 +39,11 @@ public class PacketHandler : MonoBehaviour
 		}
 	}
 
+	public static void S_SkillHandler(PacketSession session, IMessage packet)
+    {
+
+    }
+
 	public static void S_MoveHandler(PacketSession session, IMessage packet)
 	{
 		S_Move movePacket = packet as S_Move;
@@ -52,16 +57,16 @@ public class PacketHandler : MonoBehaviour
 
 		GameObject p = Managers.Object.FindById(movePacket.ObjectId);
 		p.transform.position = new Vector3(movePacket.PosInfo.PosX, movePacket.PosInfo.PosY, movePacket.PosInfo.PosZ);
-		p.transform.rotation = Quaternion.Euler(p.transform.rotation.x, movePacket.RotY, p.transform.rotation.z);
+		p.transform.rotation = Quaternion.Euler(p.transform.rotation.x, movePacket.PosInfo.RotY, p.transform.rotation.z);
 
-		// State¿Í Blend °ª ¾÷µ¥ÀÌÆ®ÇÏ°í UpdateAnimation
+		// Stateì™€ Blend ê°’ ì—…ë°ì´íŠ¸í•˜ê³  UpdateAnimation
 
 		PlayerController controller = p.GetComponent<PlayerController>();
 		controller.State = movePacket.State;
 
 		
 
-		// TODO to property
+		// TODO make these a property
 		controller._animationBlend = movePacket.AnimationBlend;
 		controller._inputMagnitude = movePacket.InputMagnitude;
 
@@ -109,13 +114,13 @@ public class PacketHandler : MonoBehaviour
 		Managers.Network.Send(loginPacket);
 	}
 
-	// ·Î±×ÀÎ OK + Ä³¸¯ÅÍ ¸ñ·Ï
+	// ë¡œê·¸ì¸ OK + ìºë¦­í„° ëª©ë¡
 	public static void S_LoginHandler(PacketSession session, IMessage packet)
 	{
 		S_Login loginPacket = (S_Login)packet;
 		Debug.Log($"LoginOk({loginPacket.LoginOk})");
 
-        // TODO : ·Îºñ UI¿¡¼­ Ä³¸¯ÅÍ º¸¿©ÁÖ°í, ¼±ÅÃÇÒ ¼ö ÀÖµµ·Ï
+        // TODO : ë¡œë¹„ UIì—ì„œ ìºë¦­í„° ë³´ì—¬ì£¼ê³ , ì„ íƒí•  ìˆ˜ ìˆë„ë¡
         if (loginPacket.Players == null || loginPacket.Players.Count == 0)
         {
             C_CreatePlayer createPacket = new C_CreatePlayer();
@@ -124,7 +129,7 @@ public class PacketHandler : MonoBehaviour
         }
         else
         {
-            // ¹«Á¶°Ç Ã¹¹øÂ° ·Î±×ÀÎ
+            // ë¬´ì¡°ê±´ ì²«ë²ˆì§¸ ë¡œê·¸ì¸
             LobbyPlayerInfo info = loginPacket.Players[0];
             C_EnterGame enterGamePacket = new C_EnterGame();
             enterGamePacket.Name = info.Name;
@@ -156,7 +161,7 @@ public class PacketHandler : MonoBehaviour
 
 		//Managers.Inven.Clear();
 
-		//// ¸Ş¸ğ¸®¿¡ ¾ÆÀÌÅÛ Á¤º¸ Àû¿ë
+		//// ë©”ëª¨ë¦¬ì— ì•„ì´í…œ ì •ë³´ ì ìš©
 		//foreach (ItemInfo itemInfo in itemList.Items)
 		//{
 		//	Item item = Item.MakeItem(itemInfo);
@@ -171,14 +176,14 @@ public class PacketHandler : MonoBehaviour
 	{
 		S_AddItem itemList = (S_AddItem)packet;
 
-		//// ¸Ş¸ğ¸®¿¡ ¾ÆÀÌÅÛ Á¤º¸ Àû¿ë
+		//// ë©”ëª¨ë¦¬ì— ì•„ì´í…œ ì •ë³´ ì ìš©
 		//foreach (ItemInfo itemInfo in itemList.Items)
 		//{
 		//	Item item = Item.MakeItem(itemInfo);
 		//	Managers.Inven.Add(item);
 		//}
 
-		//Debug.Log("¾ÆÀÌÅÛÀ» È¹µæÇß½À´Ï´Ù!");
+		//Debug.Log("ì•„ì´í…œì„ íšë“í–ˆìŠµë‹ˆë‹¤!");
 
 		//UI_GameScene gameSceneUI = Managers.UI.SceneUI as UI_GameScene;
 		//gameSceneUI.InvenUI.RefreshUI();
@@ -193,13 +198,13 @@ public class PacketHandler : MonoBehaviour
 		S_EquipItem equipItemOk = (S_EquipItem)packet;
 
 		/*
-		// ¸Ş¸ğ¸®¿¡ ¾ÆÀÌÅÛ Á¤º¸ Àû¿ë
+		// ë©”ëª¨ë¦¬ì— ì•„ì´í…œ ì •ë³´ ì ìš©
 		Item item = Managers.Inven.Get(equipItemOk.ItemDbId);
 		if (item == null)
 			return;
 
 		item.Equipped = equipItemOk.Equipped;
-		Debug.Log("¾ÆÀÌÅÛ Âø¿ë º¯°æ!");
+		Debug.Log("ì•„ì´í…œ ì°©ìš© ë³€ê²½!");
 
 		UI_GameScene gameSceneUI = Managers.UI.SceneUI as UI_GameScene;
 		gameSceneUI.InvenUI.RefreshUI();

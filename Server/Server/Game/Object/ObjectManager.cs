@@ -1,4 +1,5 @@
 ﻿using Google.Protobuf.Protocol;
+using Server.Game.Object;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -10,7 +11,7 @@ namespace Server.Game
 		public static ObjectManager Instance { get; } = new ObjectManager();
 
 		object _lock = new object();
-		public Dictionary<int, Player> Players { get; private set; } = new Dictionary<int, Player>();
+		public Dictionary<int, Player> Players { get; private set; } = new Dictionary<int, Player>(); // 접근성
 
 		// [UNUSED(1)][TYPE(7)][ID(24)]
 		int _counter = 0;

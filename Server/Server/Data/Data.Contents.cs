@@ -30,17 +30,9 @@ namespace Server.Data
 	{
 		public int id;
 		public string name;
-		public float cooldown;
+		public float range;
 		public int damage;
-		public ProjectileInfo projectile;
-	}
-
-	public class ProjectileInfo
-	{
-		public string name;
-		public float speed;
-		public int range;
-		public string prefab;
+		public int mp;
 	}
 
 	[Serializable]

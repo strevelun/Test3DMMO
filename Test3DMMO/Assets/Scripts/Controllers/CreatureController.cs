@@ -6,6 +6,7 @@ using UnityEngine;
 public class CreatureController : MonoBehaviour
 {
     public int Id { get; set; }
+    public string Name { get; set; }
 
     PositionInfo _positionInfo = new PositionInfo();
     public PositionInfo PosInfo
@@ -41,6 +42,50 @@ public class CreatureController : MonoBehaviour
             //_updated = true;
         }
     }
+
+    StatInfo _stat = new StatInfo();
+    public virtual StatInfo Stat
+    {
+        get { return _stat; }
+        set
+        {
+            if (_stat.Equals(value))
+                return;
+
+            _stat.MergeFrom(value);
+        }
+    }
+
+    protected float MoveSpeed
+    {
+        get { return Stat.Speed; }
+        set { Stat.Speed = value; }
+    }
+
+    public virtual int TotalExp
+    {
+        get { return Stat.TotalExp; }
+        set { Stat.TotalExp = value; }
+    }
+
+    public virtual int Level
+    {
+        get { return Stat.Level; }
+        set { Stat.Level = value; } 
+    }
+
+    public int Hp
+    {
+        get { return Stat.Hp; }
+        set
+        {
+            Stat.Hp = value;
+        }
+    }
+
+    public int MaxHp { get; set; }
+
+    public int Damage { get; set; }
 
     CreatureState _creatureState;   
     public virtual CreatureState State
@@ -84,6 +129,7 @@ public class CreatureController : MonoBehaviour
     protected virtual void Init()
     {
         _hasAnimator = transform.GetChild(1).TryGetComponent(out _animator);
+
         AssignAnimationIDs();
     }
 
@@ -94,7 +140,6 @@ public class CreatureController : MonoBehaviour
 
     void Update()
     {
-
         _hasAnimator = transform.GetChild(1).TryGetComponent(out _animator);
     }
 
@@ -104,7 +149,7 @@ public class CreatureController : MonoBehaviour
             return;
 
         Debug.Log("CreatureController에서 호출");
-
+        /*
         _animator.SetFloat(_animIDSpeed, _animationBlend);
         _animator.SetFloat(_animIDMotionSpeed, _inputMagnitude);
 
@@ -120,6 +165,6 @@ public class CreatureController : MonoBehaviour
         {
 
         }
-        
+        */
     }
 }

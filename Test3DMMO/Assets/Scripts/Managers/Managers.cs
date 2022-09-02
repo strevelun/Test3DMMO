@@ -19,8 +19,10 @@ public class Managers : MonoBehaviour
 
     #region Core
     ResourceManager _resource = new ResourceManager();
+    DataManager _data = new DataManager();
 
     public static ResourceManager Resource { get { return Inst._resource; } }
+    public static DataManager Data { get { return Inst._data; } }
     #endregion
 
     private void Start()
@@ -31,7 +33,7 @@ public class Managers : MonoBehaviour
     private void Update()
     {
         //_input.OnUpdate();
-        _network.Update();  
+        Network.Update();
 
     }
 
@@ -51,6 +53,7 @@ public class Managers : MonoBehaviour
 
 
             s_inst._network.Init();
+            Data.Init();
         }
     }
 }

@@ -57,11 +57,17 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\Scripts\Utils\Util.cs" />
+    <Compile Include="Assets\Kawaii Slime\Scripts\AI\Face.cs" />
+    <Compile Include="Assets\Kawaii Slime\Scripts\GameManager.cs" />
     <Compile Include="Assets\Scripts\Managers\Managers.cs" />
+    <Compile Include="Assets\Scripts\Managers\Core\DataManager.cs" />
     <Compile Include="Assets\Scripts\Packet\PacketHandler.cs" />
+    <Compile Include="Assets\Kawaii Slime\Cameras\Scripts\AbstractTargetFollower.cs" />
+    <Compile Include="Assets\Kawaii Slime\Cameras\Scripts\FreeLookCam.cs" />
     <Compile Include="Assets\Scripts\Scenes\GameScene.cs" />
     <Compile Include="Assets\Scripts\InputSystem\PlayerInputSystem.cs" />
     <Compile Include="Assets\Scripts\Controllers\PlayerController.cs" />
+    <Compile Include="Assets\Scripts\Controllers\MonsterController.cs" />
     <Compile Include="Assets\Scripts\Controllers\MyPlayerController.cs" />
     <Compile Include="Assets\Scripts\ServerCore\RecvBuffer.cs" />
     <Compile Include="Assets\Scripts\Managers\Contents\NetworkManager.cs" />
@@ -69,9 +75,12 @@
     <Compile Include="Assets\Scripts\Managers\Contents\ResourceManager.cs" />
     <Compile Include="Assets\Scripts\InputSystem\PlayerControls.cs" />
     <Compile Include="Assets\Scripts\Utils\Define.cs" />
+    <Compile Include="Assets\Scripts\Data\Data.Contents.cs" />
     <Compile Include="Assets\Scripts\Packet\ClientPacketManager.cs" />
+    <Compile Include="Assets\Kawaii Slime\Cameras\Scripts\PivotBasedCameraRig.cs" />
     <Compile Include="Assets\Scripts\Packet\PacketQueue.cs" />
     <Compile Include="Assets\Scripts\Packet\Protocol.cs" />
+    <Compile Include="Assets\Kawaii Slime\Scripts\AI\EnemyAi.cs" />
     <Compile Include="Assets\Scripts\ServerCore\Connector.cs" />
     <Compile Include="Assets\Scripts\ServerCore\Session.cs" />
     <Compile Include="Assets\Scripts\Packet\ServerSession.cs" />
@@ -83,7 +92,10 @@
     <None Include="Assets\Resources\Libs\System.Memory.dll" />
     <None Include="Assets\Resources\Libs\Google.Protobuf.dll" />
     <None Include="Assets\Resources\Libs\System.Runtime.CompilerServices.Unsafe.dll" />
+    <None Include="Assets\Kawaii Slime\Cameras\CameraGuidelines.txt" />
+    <None Include="Assets\Kawaii Slime\Shader\Unity-chan Shader Ver 1.2.1\readme.txt" />
     <None Include="Assets\RPGTinyHeroWavePBR\Shader\PBRMaskTint.shader" />
+    <None Include="Assets\Kawaii Slime\Shader\Unity-chan Shader Ver 1.2.1\Unitychan_chara_eye.shader" />
     <None Include="Assets\Resources\Libs\Newtonsoft.Json.dll" />
     <None Include="Assets\Resources\Libs\System.Buffers.dll" />
   </ItemGroup>

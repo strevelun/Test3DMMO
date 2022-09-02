@@ -11,4 +11,10 @@ public class Define
         Lobby,
         Game,
     }
+
+    public enum Layers
+    {
+        Ground = 6,
+        Monster,
+    }
 }

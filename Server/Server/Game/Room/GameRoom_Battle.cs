@@ -1,6 +1,7 @@
-﻿using Google.Protobuf;
+using Google.Protobuf;
 using Google.Protobuf.Protocol;
 using Server.Data;
+using Server.Game.Object;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -23,7 +24,7 @@ namespace Server.Game
 			// 서버에서 플레이어 좌표 수정
 			Player p = ObjectManager.Instance.Find(info.ObjectId);
 			p.Pos = new Vector3(movePosInfo.PosX, movePosInfo.PosY, movePosInfo.PosZ);
-			p.RotY = movePacket.RotY;
+			p.RotY = movePacket.PosInfo.RotY;
 			p.State = movePacket.State;
 			p._animationBlend = movePacket.AnimationBlend;
 			p._inputMagnitude = movePacket.InputMagnitude;
@@ -32,21 +33,58 @@ namespace Server.Game
 			S_Move resMovePacket = new S_Move();
 			resMovePacket.ObjectId = player.Info.ObjectId;
 			resMovePacket.PosInfo = movePacket.PosInfo;
-			resMovePacket.RotY = movePacket.RotY;	
+			resMovePacket.PosInfo.RotY = movePacket.PosInfo.RotY;	
 			resMovePacket.State = movePacket.State;
 			resMovePacket.AnimationBlend = movePacket.AnimationBlend;	
 			resMovePacket.InputMagnitude = movePacket.InputMagnitude;	
 
 			Broadcast(resMovePacket);
 			
-			Console.WriteLine($"C_Move ({movePacket.PosInfo.PosX}, {movePacket.PosInfo.PosY}, {movePacket.PosInfo.PosZ}, {movePacket.RotY}, {movePacket.State}, {movePacket.AnimationBlend}, {movePacket.InputMagnitude})");
+			Console.WriteLine($"C_Move ({movePacket.PosInfo.PosX}, {movePacket.PosInfo.PosY}, {movePacket.PosInfo.PosZ}, {movePacket.PosInfo.RotY}, {movePacket.State}, {movePacket.AnimationBlend}, {movePacket.InputMagnitude})");
 		}
-		/*
+		
 		public void HandleSkill(Player player, C_Skill skillPacket)
 		{
 			if (player == null)
 				return;
 
+            Console.WriteLine($"C_Skill {skillPacket.Info.Attacker}");
+            Console.WriteLine($"{skillPacket.Info.Victim}");
+
+			// 공격자의 공격력만큼 피해자의 체력을 깎는다.
+			// 이 때 0보다 같거나 작으면 Dead상태를 브로드캐스팅
+			// 제 3자의 입장에서 공격자의 애니메이션과 몬스터의 애니메이션이 동시에 출력되어 보이도록
+
+			Player p = null;
+			Monster m = null;
+
+			if (_players.TryGetValue(player.Id, out p) == false)
+            {
+				Console.WriteLine("플레이어의 id가 게임룸 데이터에 없음");
+				return;
+            }
+			
+			if(_monsters.TryGetValue(skillPacket.Info.Victim.ObjectId, out m) == false)
+            {
+                Console.WriteLine("몬스터 id가 게임룸 데이터에 없음");
+				return;
+            }
+
+
+			m.Hp -= p.TotalAttack;
+
+			if (m.Hp <= 0)
+				m.State = CreatureState.Dead;
+
+			p.State = CreatureState.Skill;
+
+			S_Skill skill = new S_Skill();
+			skill.Info.Attacker.Stat.MergeFrom(p.Stat);
+			skill.Info.Victim.Stat.MergeFrom(m.Stat);
+
+			Broadcast(skill);
+
+			/*
 			ObjectInfo info = player.Info;
 			if (info.PosInfo.State != CreatureState.Idle)
 				return;
@@ -91,7 +129,7 @@ namespace Server.Game
 					}
 					break;
 			}
+			*/
 		}
-		*/
 	}
 }

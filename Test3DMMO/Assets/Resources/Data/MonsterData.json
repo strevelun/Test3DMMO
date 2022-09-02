@@ -2,10 +2,10 @@
   "monsters": [
     {
         "id": "1",
-        "name": "µµ«√∞ªæÓ",
+        "name": "Ïä¨ÎùºÏûÑ",
         "stat": {
             "level": "1",
-            "maxHp": "20",
+            "maxHp": "10",
             "attack": "5",
             "speed": "5.0",
             "totalExp": "10"

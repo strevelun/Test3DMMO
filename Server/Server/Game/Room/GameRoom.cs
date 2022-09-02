@@ -1,6 +1,7 @@
-﻿using Google.Protobuf;
+using Google.Protobuf;
 using Google.Protobuf.Protocol;
 using Server.Data;
+using Server.Game.Object;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,23 +14,23 @@ namespace Server.Game
 		public int RoomId { get; set; }
 
 		Dictionary<int, Player> _players = new Dictionary<int, Player>();
-		//Dictionary<int, Monster> _monsters = new Dictionary<int, Monster>();
+		Dictionary<int, Monster> _monsters = new Dictionary<int, Monster>();
 
 
 		//public Map Map { get; private set; } = new Map();
 		
-		public void Init(int mapId, int zoneCells)
+		public void Init(int mapId)
 		{
-			//Map.LoadMap(mapId);
+            //Map.LoadMap(mapId);
 
-			//// TEMP
-			//for (int i = 0; i < 500; i++)
-			//{
-			//	Monster monster = ObjectManager.Instance.Add<Monster>();
-			//	monster.Init(1);
-			//	EnterGame(monster, randomPos: true);
-			//}
-		}
+            //// TEMP
+            for (int i = 0; i < 1; i++)
+            {
+                Monster monster = ObjectManager.Instance.Add<Monster>(); // 몬스터 고유 아이디 생성
+                monster.Init(1);
+                EnterGame(monster);
+            }
+        }
 		
 		// 누군가 주기적으로 호출해줘야 한다
 		public void Update()
@@ -62,30 +63,36 @@ namespace Server.Game
 					enterPacket.Player = player.Info;
 					player.Session.Send(enterPacket);
 				}
-			}
-			//else if (type == GameObjectType.Monster)
-			//{
-			//	Monster monster = gameObject as Monster;
-			//	_monsters.Add(gameObject.Id, monster);
-			//	monster.Room = this;
 
-			//	GetZone(monster.CellPos).Monsters.Add(monster);
-			//	Map.ApplyMove(monster, new Vector2Int(monster.CellPos.x, monster.CellPos.y));
+                S_Spawn spawn1 = new S_Spawn();
+                foreach (Player p in _players.Values)
+                    spawn1.Objects.Add(p.Info);
+                player.Session.Send(spawn1);
 
-			//	monster.Update();
-			//}
-
-			// 나에게 현재 게임 방에 있는 모든 플레이어 정보 전송
-			S_Spawn spawn = new S_Spawn();
-			foreach(Player p in ObjectManager.Instance.Players.Values)
+                S_Spawn spawn2 = new S_Spawn();
+                foreach (Monster m in _monsters.Values)
+                    spawn2.Objects.Add(m.Info);
+                player.Session.Send(spawn2);
+            }
+            else if (type == GameObjectType.Monster)
             {
-				spawn.Objects.Add(p.Info);
-			}
-			player.Session.Send(spawn);
+                Monster monster = gameObject as Monster;
+                _monsters.Add(gameObject.Id, monster);
+                monster.Room = this;
+                monster.WorldPos = new Vector3(3.2f, 0f, 3.7f);
 
+                monster.Update();
+            }
 
-			// 타인한테 정보 전송
-			{
+            // 새로 들어온 플레이어는 _players와 _monsters에 있는 정보를 전달받아야 한다.
+            // 그리고 새로 들어온 플레이어의 정보를 이미 존재하는 방의 _players에게 뿌려야 한다.
+            
+
+            
+            
+
+            // 타인한테 정보 전송
+            {
 				S_Spawn spawnPacket = new S_Spawn();
 				spawnPacket.Objects.Add(gameObject.Info);
 				Broadcast(spawnPacket);
@@ -148,8 +155,8 @@ namespace Server.Game
 		public void Broadcast(IMessage packet)
 		{
 			foreach (Player p in _players.Values)
-			{
-				p.Session.Send(packet);
+            {
+                p.Session.Send(packet);
 			}
 		}
 	}

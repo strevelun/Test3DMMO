@@ -6,7 +6,6 @@ using UnityEngine;
 public class PlayerController : CreatureController
 {
     [Header("플레이어")]
-    public float _moveSpeed = 5.0f;
     public float _sprintSpeed = 10.0f;
     public float _rotationSmoothTime = 0.12f; // 캐릭터 회전 속도
     public float _speedChangeRate = 10.0f; // 가속/감속
@@ -110,6 +109,7 @@ public class PlayerController : CreatureController
         }
         else if (State == CreatureState.Idle)
         {
+            // idle일때 애니메이션 재생 x
             _animator.SetBool(_animIDGrounded, true);
             _animator.SetBool(_animIDJump, false);
             _animator.SetBool(_animIDFreeFall, false);

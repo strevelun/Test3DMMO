@@ -25,6 +25,8 @@ enum MsgId {
   S_CHANGE_STAT = 18;
   S_PING = 19;
   C_PONG = 20;
+  S_SKILL = 21;
+  C_SKILL = 22;
 }
 
 enum CreatureState {
@@ -91,7 +93,6 @@ message S_Despawn {
 
 message C_Move {
   PositionInfo posInfo = 1;
-  float rotY = 2;
   CreatureState state = 3;
   float animationBlend = 4;
   float inputMagnitude = 5;
@@ -100,7 +101,6 @@ message C_Move {
 message S_Move {
   int32 objectId = 1;
   PositionInfo posInfo = 2;
-  float rotY = 3;
   CreatureState state = 4;
   float animationBlend = 5;
   float inputMagnitude = 6;
@@ -168,6 +168,21 @@ message S_Ping {
 message C_Pong {
 }
 
+message C_Skill{
+	SkillInfo info = 1;
+}
+
+message S_Skill {
+	SkillInfo info = 1;
+}
+
+message SkillInfo
+{
+	ObjectInfo attacker = 1;
+	ObjectInfo victim = 2;
+	int32 skillId = 3;
+}
+
 message LobbyPlayerInfo {
   int32 playerDbId = 1;
   string name = 2;
@@ -178,14 +193,14 @@ message ObjectInfo {
   int32 objectId = 1;
   string name = 2;
   PositionInfo posInfo = 3;
-  StatInfo statInfo = 4;
-  float rotY = 5;
+  StatInfo stat = 4;
 }
 
 message PositionInfo {
   float posX = 1;
   float posY = 2;
   float	posZ = 3;
+  float rotY = 4;
 }
 
 message StatInfo {

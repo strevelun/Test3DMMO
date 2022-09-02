@@ -21,8 +21,8 @@ public class MyPlayerController : PlayerController
     private float _cinemachineTargetYaw;
     private float _cinemachineTargetPitch;
 
-    public float _cameraAngleOverride = 0.0f; // lock »óÅÂÀÏ ¶§ Ä«¸Ş¶ó À§Ä¡ ¹Ì¼¼Á¶Á¤ÇÒ ¶§ À¯¿ë
-    public bool _lockCameraPosition = false; // Ä«¸Ş¶ó ¸ğµç Ãà Àá±İ
+    public float _cameraAngleOverride = 0.0f; // lock ìƒíƒœì¼ ë•Œ ì¹´ë©”ë¼ ìœ„ì¹˜ ë¯¸ì„¸ì¡°ì •í•  ë•Œ ìœ ìš©
+    public bool _lockCameraPosition = false; // ì¹´ë©”ë¼ ëª¨ë“  ì¶• ì ê¸ˆ
 
     // player
     private float _speed;
@@ -62,14 +62,19 @@ public class MyPlayerController : PlayerController
         JumpAndGravity();
         GroundedCheck();
         Move();
-        Debug.Log(_grounded);
+        //Debug.Log(_grounded);
         Attack();
         CheckDead();
+
+
+
+
+        Debug.DrawRay(transform.position + Vector3.up, Vector3.forward * 2, Color.red);
     }
 
     private void CheckDead()
     {
-        // Dead ¸ğ¼Ç Å×½ºÆ®
+        // Dead ëª¨ì…˜ í…ŒìŠ¤íŠ¸
         //State = CreatureState.Dead;
     }
 
@@ -91,26 +96,49 @@ public class MyPlayerController : PlayerController
         _fallTimeoutDelta = _fallTimeout;
 
         WorldPos = transform.position;
-        
-        // move Å×½ºÆ®
-        _coSkill = StartCoroutine("CoStartPunch");
+
+        Name = "í…ŒìŠ¤íŠ¸ ì´ë¦„";
+        Stat.Attack = 5;
+        Stat.Hp = 10;
+        Stat.MaxHp = 10;
+        Stat.Level = 1;
+        Stat.Speed = 5;
+
     }
 
     void Attack()
     {
+        // ìœ ì €ê°€ ìŠ¤í‚¬ í‚¤ë¥¼ ëˆ„ë¥´ë©´ ìºë¦­í„°ê°€ ë°”ë¼ë³´ëŠ” ì•ì— ìˆëŠ” ìœ ì €ë¥¼ ë ˆì´ìºìŠ¤íŠ¸(ë§ì€ ìºë¦­í„°ëŠ” CharacterControllerë¥¼ ê°€ì§„ ì˜¤ë¸Œì íŠ¸)
+        // 
+        RaycastHit hit;
+        LayerMask mask =  1 << (int)Define.Layers.Monster;
+
+        MonsterController monsterController = null;
+
+        // _input.attack : ë§ˆìš°ìŠ¤ ì™¼ìª½ë²„íŠ¼ 
         if (_input.attack)
         {
-            if (_hasAnimator)
+            if (Physics.Raycast(transform.position, transform.forward, out hit, 7f, mask))
             {
-                State = CreatureState.Skill;
+                if (!hit.transform.TryGetComponent(out monsterController))
+                {
+                    Debug.Log($"{hit.transform.name}ì— MonsterControllerê°€ ì¡´ì¬í•˜ì§€ ì•ŠìŠµë‹ˆë‹¤!");
+                    return;
+                }
+
+                SendSkillPacket(monsterController);
             }
+
+            if (_hasAnimator)
+                State = CreatureState.Skill;
+           
             _input.attack = false;
         }
-    }
+      
 
-    IEnumerator CoStartPunch()
-    {
-        yield return new WaitForSeconds(0.5f);
+        // ì´í™íŠ¸
+
+        // ì‚¬ìš´ë“œ
     }
 
     private static float ClampAngle(float lfAngle, float lfMin, float lfMax)
@@ -142,11 +170,11 @@ public class MyPlayerController : PlayerController
 
     protected override void Move()
     {
-        float targetSpeed = _input.sprint ? _sprintSpeed : _moveSpeed;
+        float targetSpeed = _input.sprint ? _sprintSpeed : MoveSpeed;
 
         if (_input.move == Vector2.zero)
         {
-            targetSpeed = 0.0f; // ÀÔ·Â ¾øÀ» °æ¿ì
+            targetSpeed = 0.0f; // ì…ë ¥ ì—†ì„ ê²½ìš°
         }
 
         float currentHorizontalSpeed = new Vector3(_controller.velocity.x, 0.0f, _controller.velocity.z).magnitude;
@@ -184,7 +212,7 @@ public class MyPlayerController : PlayerController
             // rotate to face input direction relative to camera position
             transform.rotation = Quaternion.Euler(0.0f, rotation, 0.0f);
 
-            RotY = rotation;
+            PosInfo.RotY = rotation;
         }
 
         Vector3 targetDirection = Quaternion.Euler(0.0f, _targetRotation, 0.0f) * Vector3.forward;
@@ -196,7 +224,7 @@ public class MyPlayerController : PlayerController
 
         WorldPos = transform.position;
 
-        // Á¡ÇÁÅ° ´©¸£°í Âû³ªÀÇ ¼ø°£ ÆĞÅ¶ º¸³»´Â °¸ ÁÙÀÌ±â
+        // ì í”„í‚¤ ëˆ„ë¥´ê³  ì°°ë‚˜ì˜ ìˆœê°„ íŒ¨í‚· ë³´ë‚´ëŠ” ê°­ ì¤„ì´ê¸°
         if (State == CreatureState.Jump)
             SendMovePacket();
 
@@ -281,7 +309,7 @@ public class MyPlayerController : PlayerController
         }
 
         // apply gravity over time if under terminal (multiply by delta time twice to linearly speed up over time)
-        if (_verticalVelocity < _terminalVelocity) // ¶³¾îÁú ¶§ ÃÖ°í ¼Óµµº¸´Ù ÀÛÀ¸¸é 
+        if (_verticalVelocity < _terminalVelocity) // ë–¨ì–´ì§ˆ ë•Œ ìµœê³  ì†ë„ë³´ë‹¤ ì‘ìœ¼ë©´ 
         {
             _verticalVelocity += _gravity * Time.deltaTime;
         }
@@ -362,10 +390,46 @@ public class MyPlayerController : PlayerController
 
         C_Move movePacket = new C_Move();
         movePacket.PosInfo = PosInfo;
-        movePacket.RotY = RotY;
         movePacket.State = State;
         movePacket.AnimationBlend = _animationBlend;
         movePacket.InputMagnitude = _inputMagnitude;
         Managers.Network.Send(movePacket);
+    }
+
+    private void SendSkillPacket(CreatureController controller)
+    {
+        /*
+        ObjectInfo info = new ObjectInfo();
+        info.ObjectId = Id;
+        info.Name = Name;
+        info.Stat = Stat;
+        info.PosInfo = PosInfo;
+
+        ObjectInfo attackedInfo = new ObjectInfo();
+        info.ObjectId = controller.Id;
+        info.Name = controller.Name;    
+        info.Stat = controller.Stat;
+        info.PosInfo = controller.PosInfo;
+        */
+        
+        C_Skill skillPacket = new C_Skill();
+
+        SkillInfo skillInfo = new SkillInfo();
+        skillInfo.Attacker = new ObjectInfo();
+        skillInfo.Attacker.Name = Name;
+        skillInfo.Attacker.Stat = Stat;
+        skillInfo.Attacker.PosInfo = PosInfo;
+        skillInfo.Attacker.ObjectId = Id;
+
+        skillInfo.Victim = new ObjectInfo();
+        skillInfo.Victim.Name = controller.Name;
+        skillInfo.Victim.Stat = controller.Stat;
+        skillInfo.Victim.PosInfo = controller.PosInfo;
+        skillInfo.Victim.ObjectId = controller.Id;
+
+        skillPacket.Info = skillInfo;
+
+        skillPacket.Info.SkillId = 1;
+        Managers.Network.Send(skillPacket);
     }
 }

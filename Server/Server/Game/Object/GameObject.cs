@@ -1,4 +1,4 @@
-﻿using Google.Protobuf.Protocol;
+using Google.Protobuf.Protocol;
 using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
@@ -45,12 +45,22 @@ namespace Server.Game
 			set;
 		}
 
+        public Vector3 WorldPos
+        {
+            get { return new Vector3(PosInfo.PosX, PosInfo.PosY, PosInfo.PosZ); }
+            set
+            {
+                PosInfo.PosX = value.x;
+                PosInfo.PosY = value.y;
+                PosInfo.PosZ = value.z;
+            }
+        }
 
 
-		public GameObject()
+        public GameObject()
 		{
 			Info.PosInfo = PosInfo;
-			Info.StatInfo = Stat;
+			Info.Stat = Stat;
 		}
 
 		public virtual void Update()
