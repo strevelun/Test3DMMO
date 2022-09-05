@@ -77,10 +77,11 @@ namespace Server.Game
 				m.State = CreatureState.Dead;
 
 			p.State = CreatureState.Skill;
-
+            
 			S_Skill skill = new S_Skill();
-			skill.Info.Attacker.Stat.MergeFrom(p.Stat);
-			skill.Info.Victim.Stat.MergeFrom(m.Stat);
+            skill.Info = skillPacket.Info;
+            
+	
 
 			Broadcast(skill);
 

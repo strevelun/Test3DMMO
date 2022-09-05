@@ -4,6 +4,7 @@ using ServerCore;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem.XR;
 
 public class PacketHandler : MonoBehaviour
 {
@@ -41,7 +42,10 @@ public class PacketHandler : MonoBehaviour
 
 	public static void S_SkillHandler(PacketSession session, IMessage packet)
     {
-
+		S_Skill skillPacket = packet as S_Skill;
+		GameObject go = Managers.Object.FindById(skillPacket.Info.Attacker.ObjectId);
+		PlayerController pc = go.GetComponent<PlayerController>();
+		pc.State = CreatureState.Skill;
     }
 
 	public static void S_MoveHandler(PacketSession session, IMessage packet)
@@ -55,20 +59,31 @@ public class PacketHandler : MonoBehaviour
 		if (Managers.Object.MyPlayer.Id == movePacket.ObjectId)
 			return;
 
-		GameObject p = Managers.Object.FindById(movePacket.ObjectId);
-		p.transform.position = new Vector3(movePacket.PosInfo.PosX, movePacket.PosInfo.PosY, movePacket.PosInfo.PosZ);
-		p.transform.rotation = Quaternion.Euler(p.transform.rotation.x, movePacket.PosInfo.RotY, p.transform.rotation.z);
+        go.transform.position = new Vector3(movePacket.PosInfo.PosX, movePacket.PosInfo.PosY, movePacket.PosInfo.PosZ);
+        go.transform.rotation = Quaternion.Euler(go.transform.rotation.x, movePacket.PosInfo.RotY, go.transform.rotation.z);
 
-		// State와 Blend 값 업데이트하고 UpdateAnimation
+        // State와 Blend 값 업데이트하고 UpdateAnimation
 
-		PlayerController controller = p.GetComponent<PlayerController>();
-		controller.State = movePacket.State;
+        GameObjectType objectType = ObjectManager.GetObjectTypeById(movePacket.ObjectId);
+
+        if (objectType == GameObjectType.Player)
+        {
+            PlayerController pc = go.GetComponent<PlayerController>();
+            pc.State = movePacket.State;
+            pc._animationBlend = movePacket.AnimationBlend;
+            pc._inputMagnitude = movePacket.InputMagnitude;
+
+        }
+        else if (objectType == GameObjectType.Monster)
+        {
+            MonsterController mc = Util.GetOrAddComponent<MonsterController>(go);
+			mc.State = movePacket.State;
+        }
+
 
 		
 
 		// TODO make these a property
-		controller._animationBlend = movePacket.AnimationBlend;
-		controller._inputMagnitude = movePacket.InputMagnitude;
 
 		
 	}

@@ -27,6 +27,9 @@ namespace Server.Game
             for (int i = 0; i < 1; i++)
             {
                 Monster monster = ObjectManager.Instance.Add<Monster>(); // 몬스터 고유 아이디 생성
+                MonsterData data;
+                DataManager.MonsterDict.TryGetValue(1, out data);
+                monster.Info.Name = data.name;
                 monster.Init(1);
                 EnterGame(monster);
             }
@@ -77,9 +80,12 @@ namespace Server.Game
             else if (type == GameObjectType.Monster)
             {
                 Monster monster = gameObject as Monster;
-                _monsters.Add(gameObject.Id, monster);
+                _monsters.Add(1, monster);
+
+                monster.Info.Name = gameObject.Info.Name;
                 monster.Room = this;
                 monster.WorldPos = new Vector3(3.2f, 0f, 3.7f);
+                monster.Info.MergeFrom(gameObject.Info);
 
                 monster.Update();
             }

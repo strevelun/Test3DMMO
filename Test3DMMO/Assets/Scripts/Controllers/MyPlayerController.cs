@@ -108,17 +108,17 @@ public class MyPlayerController : PlayerController
 
     void Attack()
     {
-        // 유저가 스킬 키를 누르면 캐릭터가 바라보는 앞에 있는 유저를 레이캐스트(맞은 캐릭터는 CharacterController를 가진 오브젝트)
-        // 
         RaycastHit hit;
         LayerMask mask =  1 << (int)Define.Layers.Monster;
 
         MonsterController monsterController = null;
 
-        // _input.attack : 마우스 왼쪽버튼 
-        if (_input.attack)
+        if (Input.GetMouseButtonDown(0))
         {
-            if (Physics.Raycast(transform.position, transform.forward, out hit, 7f, mask))
+            Vector3 vec = transform.position;
+            vec.y = vec.y + 0.3f;
+
+            if (Physics.Raycast(vec, transform.forward, out hit, 10f, mask))
             {
                 if (!hit.transform.TryGetComponent(out monsterController))
                 {
@@ -126,6 +126,7 @@ public class MyPlayerController : PlayerController
                     return;
                 }
 
+                Debug.Log("히트!!!!!!");
                 SendSkillPacket(monsterController);
             }
 
@@ -429,7 +430,7 @@ public class MyPlayerController : PlayerController
 
         skillPacket.Info = skillInfo;
 
-        skillPacket.Info.SkillId = 1;
+        skillPacket.Info.SkillId = 1; // SkillData.json
         Managers.Network.Send(skillPacket);
     }
 }

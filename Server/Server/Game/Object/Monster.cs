@@ -24,8 +24,9 @@ namespace Server.Game.Object
 			MonsterData monsterData = null;
 			DataManager.MonsterDict.TryGetValue(TemplateId, out monsterData);
 			Stat.MergeFrom(monsterData.stat);
-			Stat.Hp = monsterData.stat.MaxHp;
 			State = CreatureState.Idle;
+
+            // 초기화할 때 스폰 패킷
 		}
 
         void BroadcastMove()
@@ -34,6 +35,7 @@ namespace Server.Game.Object
             S_Move movePacket = new S_Move();
             movePacket.ObjectId = Id;
             movePacket.PosInfo = PosInfo;
+
             Room.Broadcast(movePacket);
         }
 
