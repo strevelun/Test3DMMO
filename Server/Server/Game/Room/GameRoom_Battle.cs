@@ -29,8 +29,16 @@ namespace Server.Game
 			p._animationBlend = movePacket.AnimationBlend;
 			p._inputMagnitude = movePacket.InputMagnitude;
 
-			// 브로드캐스팅
-			S_Move resMovePacket = new S_Move();
+            // 게임룸 딕셔너리 좌표 수정
+            _players.TryGetValue(player.Id, out p);
+            p.Pos = new Vector3(movePosInfo.PosX, movePosInfo.PosY, movePosInfo.PosZ);
+            p.RotY = movePacket.PosInfo.RotY;
+            p.State = movePacket.State;
+            p._animationBlend = movePacket.AnimationBlend;
+            p._inputMagnitude = movePacket.InputMagnitude;
+
+            // 브로드캐스팅
+            S_Move resMovePacket = new S_Move();
 			resMovePacket.ObjectId = player.Info.ObjectId;
 			resMovePacket.PosInfo = movePacket.PosInfo;
 			resMovePacket.PosInfo.RotY = movePacket.PosInfo.RotY;	
@@ -56,33 +64,35 @@ namespace Server.Game
 			// 제 3자의 입장에서 공격자의 애니메이션과 몬스터의 애니메이션이 동시에 출력되어 보이도록
 
 			Player p = null;
-			Monster m = null;
 
 			if (_players.TryGetValue(player.Id, out p) == false)
             {
 				Console.WriteLine("플레이어의 id가 게임룸 데이터에 없음");
 				return;
             }
-			
-			if(_monsters.TryGetValue(skillPacket.Info.Victim.ObjectId, out m) == false)
+
+            if (skillPacket.Info.Victim != null)
             {
-                Console.WriteLine("몬스터 id가 게임룸 데이터에 없음");
-				return;
+                Monster m = null;
+
+                if (_monsters.TryGetValue(skillPacket.Info.Victim.ObjectId, out m) == false)
+                {
+                    Console.WriteLine("몬스터 id가 게임룸 데이터에 없음");
+                    return;
+                }
+
+                m.Hp -= p.TotalAttack;
+
+                if (m.Hp <= 0)
+                    m.State = CreatureState.Dead;
             }
 
-
-			m.Hp -= p.TotalAttack;
-
-			if (m.Hp <= 0)
-				m.State = CreatureState.Dead;
-
+            ObjectManager.Instance.Find(player.Id).State = CreatureState.Skill;
 			p.State = CreatureState.Skill;
             
 			S_Skill skill = new S_Skill();
             skill.Info = skillPacket.Info;
             
-	
-
 			Broadcast(skill);
 
 			/*

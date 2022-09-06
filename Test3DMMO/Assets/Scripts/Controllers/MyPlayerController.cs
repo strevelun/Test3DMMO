@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
 
 public class MyPlayerController : PlayerController
 {
@@ -34,6 +35,7 @@ public class MyPlayerController : PlayerController
     // timeout deltatime
     private float _jumpTimeoutDelta;
     private float _fallTimeoutDelta;
+
     
 
     private bool IsCurrentDeviceMouse
@@ -118,22 +120,24 @@ public class MyPlayerController : PlayerController
             Vector3 vec = transform.position;
             vec.y = vec.y + 0.3f;
 
+            GameScene.Log("마우스 눌렀음");
+
             if (Physics.Raycast(vec, transform.forward, out hit, 10f, mask))
             {
                 if (!hit.transform.TryGetComponent(out monsterController))
                 {
                     Debug.Log($"{hit.transform.name}에 MonsterController가 존재하지 않습니다!");
-                    return;
                 }
 
                 Debug.Log("히트!!!!!!");
-                SendSkillPacket(monsterController);
             }
 
-            if (_hasAnimator)
-                State = CreatureState.Skill;
+            SendSkillPacket(monsterController);
+            
+            //if (_hasAnimator)
+            //    State = CreatureState.Skill;
            
-            _input.attack = false;
+            //_input.attack = false;
         }
       
 
@@ -397,7 +401,7 @@ public class MyPlayerController : PlayerController
         Managers.Network.Send(movePacket);
     }
 
-    private void SendSkillPacket(CreatureController controller)
+    private void SendSkillPacket(CreatureController controller = null)
     {
         /*
         ObjectInfo info = new ObjectInfo();
@@ -422,11 +426,14 @@ public class MyPlayerController : PlayerController
         skillInfo.Attacker.PosInfo = PosInfo;
         skillInfo.Attacker.ObjectId = Id;
 
-        skillInfo.Victim = new ObjectInfo();
-        skillInfo.Victim.Name = controller.Name;
-        skillInfo.Victim.Stat = controller.Stat;
-        skillInfo.Victim.PosInfo = controller.PosInfo;
-        skillInfo.Victim.ObjectId = controller.Id;
+        if (controller != null)
+        {
+            skillInfo.Victim = new ObjectInfo();
+            skillInfo.Victim.Name = controller.Name;
+            skillInfo.Victim.Stat = controller.Stat;
+            skillInfo.Victim.PosInfo = controller.PosInfo;
+            skillInfo.Victim.ObjectId = controller.Id;
+        }
 
         skillPacket.Info = skillInfo;
 

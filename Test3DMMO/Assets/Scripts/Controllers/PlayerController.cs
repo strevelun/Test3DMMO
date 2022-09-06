@@ -5,10 +5,10 @@ using UnityEngine;
 
 public class PlayerController : CreatureController
 {
-    [Header("ÇÃ·¹ÀÌ¾î")]
+    [Header("í”Œë ˆì´ì–´")]
     public float _sprintSpeed = 10.0f;
-    public float _rotationSmoothTime = 0.12f; // Ä³¸¯ÅÍ È¸Àü ¼Óµµ
-    public float _speedChangeRate = 10.0f; // °¡¼Ó/°¨¼Ó
+    public float _rotationSmoothTime = 0.12f; // ìºë¦­í„° íšŒì „ ì†ë„
+    public float _speedChangeRate = 10.0f; // ê°€ì†/ê°ì†
 
     public AudioClip _landingAudioClip;
     public AudioClip[] _footstepAudioClips;
@@ -16,26 +16,26 @@ public class PlayerController : CreatureController
 
     [Space(10)]
     public float _jumpHeight = 1.2f;
-    public float _gravity = -15.0f; // Ä³¸¯ÅÍ °íÀ¯ Áß·Â
+    public float _gravity = -15.0f; // ìºë¦­í„° ê³ ìœ  ì¤‘ë ¥
 
     [Space(10)]
     public LayerMask _pushLayers;
     public bool _canPush;
     [Range(0.5f, 5f)] public float _strength = 1.1f;
 
-    protected float _jumpTimeout = 0.7f; // ÂøÁö ¾Ö´Ï¸ŞÀÌ¼Ç ½Ã°£. (TODO ÃßÈÄ ÂøÁö ¾Ö´Ï¸ŞÀÌ¼Ç ºü¸£°Ô ¼öÁ¤)
-    protected float _fallTimeout = 0.15f; // fall »óÅÂ ÀÌÀü Åë°ú ÇÊ¿ä ½Ã°£. °è´ÜÀ» ³»·Á°¥ ¶§ À¯¿ë. (ÃÖ¼Ò ÀÌ ½Ã°£ÀÌ Áö³ª¾ß freeFall »óÅÂ ¸ğ¼ÇÀ¸·Î µé¾î°¨)
+    protected float _jumpTimeout = 0.7f; // ì°©ì§€ ì• ë‹ˆë©”ì´ì…˜ ì‹œê°„. (TODO ì¶”í›„ ì°©ì§€ ì• ë‹ˆë©”ì´ì…˜ ë¹ ë¥´ê²Œ ìˆ˜ì •)
+    protected float _fallTimeout = 0.15f; // fall ìƒíƒœ ì´ì „ í†µê³¼ í•„ìš” ì‹œê°„. ê³„ë‹¨ì„ ë‚´ë ¤ê°ˆ ë•Œ ìœ ìš©. (ìµœì†Œ ì´ ì‹œê°„ì´ ì§€ë‚˜ì•¼ freeFall ìƒíƒœ ëª¨ì…˜ìœ¼ë¡œ ë“¤ì–´ê°)
 
-    [Header("ÇÃ·¹ÀÌ¾î Áö¸é Ã¼Å©")]
+    [Header("í”Œë ˆì´ì–´ ì§€ë©´ ì²´í¬")]
     public bool _grounded = true;
-    public float _groundedOffset = -0.28f; // ¿ïÅüºÒÅüÇÑ Áö¸é¿¡¼­ À¯¿ë
-    public float _groundedRadius = 0.33f; // grounded checkÀÇ ¹İÁö¸§. Ä³¸¯ÅÍ ÄÁÆ®·Ñ·¯ÀÇ ¹İÁö¸§°ú ÀÏÄ¡ÇØ¾ß ÇÔ
+    public float _groundedOffset = -0.28f; // ìš¸í‰ë¶ˆí‰í•œ ì§€ë©´ì—ì„œ ìœ ìš©
+    public float _groundedRadius = 0.33f; // grounded checkì˜ ë°˜ì§€ë¦„. ìºë¦­í„° ì»¨íŠ¸ë¡¤ëŸ¬ì˜ ë°˜ì§€ë¦„ê³¼ ì¼ì¹˜í•´ì•¼ í•¨
     public LayerMask GroundLayers;
 
-    [Header("½Ã³×¸Ó½Å")]
+    [Header("ì‹œë„¤ë¨¸ì‹ ")]
     public GameObject CinemachineCameraTarget;
-    public float _topClamp = 70.0f; // Ä«¸Ş¶ó ÃÖ´ë°¢
-    public float _bottomClamp = -30.0f; // Ä«¸Ş¶ó ÃÖ¼Ò°¢
+    public float _topClamp = 70.0f; // ì¹´ë©”ë¼ ìµœëŒ€ê°
+    public float _bottomClamp = -30.0f; // ì¹´ë©”ë¼ ìµœì†Œê°
 
 
     protected Coroutine _coSkill;
@@ -109,7 +109,7 @@ public class PlayerController : CreatureController
         }
         else if (State == CreatureState.Idle)
         {
-            // idleÀÏ¶§ ¾Ö´Ï¸ŞÀÌ¼Ç Àç»ı x
+            // idleì¼ë•Œ ì• ë‹ˆë©”ì´ì…˜ ì¬ìƒ x
             _animator.SetBool(_animIDGrounded, true);
             _animator.SetBool(_animIDJump, false);
             _animator.SetBool(_animIDFreeFall, false);
@@ -126,6 +126,7 @@ public class PlayerController : CreatureController
         else if (State == CreatureState.Skill)
         {
             _animator.SetTrigger(_animIDAttack);
+            State = CreatureState.Idle;
         }
         else if (State == CreatureState.Dead)
         {
