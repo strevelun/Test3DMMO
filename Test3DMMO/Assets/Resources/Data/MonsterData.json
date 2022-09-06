@@ -2,7 +2,7 @@
   "monsters": [
     {
         "id": "1",
-        "name": "슬라임",
+        "name": "slime",
         "stat": {
             "level": "1",
             "maxHp": "10",

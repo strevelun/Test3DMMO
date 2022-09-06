@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\fere1\\Documents\\GitHub\\Test3DMMO\\Server\\ServerCore\\ServerCore.csproj": {}
+    "C:\\github\\Test3DMMO\\Server\\ServerCore\\ServerCore.csproj": {}
   },
   "projects": {
-    "C:\\Users\\fere1\\Documents\\GitHub\\Test3DMMO\\Server\\ServerCore\\ServerCore.csproj": {
+    "C:\\github\\Test3DMMO\\Server\\ServerCore\\ServerCore.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\fere1\\Documents\\GitHub\\Test3DMMO\\Server\\ServerCore\\ServerCore.csproj",
+        "projectUniqueName": "C:\\github\\Test3DMMO\\Server\\ServerCore\\ServerCore.csproj",
         "projectName": "ServerCore",
-        "projectPath": "C:\\Users\\fere1\\Documents\\GitHub\\Test3DMMO\\Server\\ServerCore\\ServerCore.csproj",
-        "packagesPath": "C:\\Users\\fere1\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\fere1\\Documents\\GitHub\\Test3DMMO\\Server\\ServerCore\\obj\\",
+        "projectPath": "C:\\github\\Test3DMMO\\Server\\ServerCore\\ServerCore.csproj",
+        "packagesPath": "C:\\Users\\으노\\.nuget\\packages\\",
+        "outputPath": "C:\\github\\Test3DMMO\\Server\\ServerCore\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\fere1\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\으노\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -59,7 +59,8 @@
             "net47",
             "net471",
             "net472",
-            "net48"
+            "net48",
+            "net481"
           ],
           "assetTargetFallback": true,
           "warn": true,
@@ -68,7 +69,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.201\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.400\\RuntimeIdentifierGraph.json"
         }
       }
     }

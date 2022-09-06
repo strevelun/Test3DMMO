@@ -61,11 +61,15 @@ public class MyPlayerController : PlayerController
     private void Update()
     {
 
+
         JumpAndGravity();
         GroundedCheck();
         Move();
-        //Debug.Log(_grounded);
+        
+        //Transform t = g.transform;
         Attack();
+        //Transform t2 = t.GetChild(0);
+        //t.GetComponent<Text>().text = "update";
         CheckDead();
 
 
@@ -120,7 +124,6 @@ public class MyPlayerController : PlayerController
             Vector3 vec = transform.position;
             vec.y = vec.y + 0.3f;
 
-            GameScene.Log("마우스 눌렀음");
 
             if (Physics.Raycast(vec, transform.forward, out hit, 10f, mask))
             {
@@ -128,15 +131,17 @@ public class MyPlayerController : PlayerController
                 {
                     Debug.Log($"{hit.transform.name}에 MonsterController가 존재하지 않습니다!");
                 }
-
-                Debug.Log("히트!!!!!!");
             }
+            else
+                Managers.UI.Log("미스");
 
+
+            Managers.UI.Log($"{monsterController == null}");
             SendSkillPacket(monsterController);
-            
+
             //if (_hasAnimator)
             //    State = CreatureState.Skill;
-           
+
             //_input.attack = false;
         }
       
@@ -418,6 +423,7 @@ public class MyPlayerController : PlayerController
         */
         
         C_Skill skillPacket = new C_Skill();
+        Managers.UI.Log("2");
 
         SkillInfo skillInfo = new SkillInfo();
         skillInfo.Attacker = new ObjectInfo();
@@ -430,14 +436,17 @@ public class MyPlayerController : PlayerController
         {
             skillInfo.Victim = new ObjectInfo();
             skillInfo.Victim.Name = controller.Name;
+            Managers.UI.Log("4");
             skillInfo.Victim.Stat = controller.Stat;
             skillInfo.Victim.PosInfo = controller.PosInfo;
+
             skillInfo.Victim.ObjectId = controller.Id;
         }
 
         skillPacket.Info = skillInfo;
 
         skillPacket.Info.SkillId = 1; // SkillData.json
+
         Managers.Network.Send(skillPacket);
     }
 }

@@ -8,19 +8,27 @@
           "System.Memory": "4.5.2"
         },
         "compile": {
-          "lib/netstandard2.0/Google.Protobuf.dll": {}
+          "lib/netstandard2.0/Google.Protobuf.dll": {
+            "related": ".pdb;.xml"
+          }
         },
         "runtime": {
-          "lib/netstandard2.0/Google.Protobuf.dll": {}
+          "lib/netstandard2.0/Google.Protobuf.dll": {
+            "related": ".pdb;.xml"
+          }
         }
       },
       "Newtonsoft.Json/13.0.1": {
         "type": "package",
         "compile": {
-          "lib/netstandard2.0/Newtonsoft.Json.dll": {}
+          "lib/netstandard2.0/Newtonsoft.Json.dll": {
+            "related": ".xml"
+          }
         },
         "runtime": {
-          "lib/netstandard2.0/Newtonsoft.Json.dll": {}
+          "lib/netstandard2.0/Newtonsoft.Json.dll": {
+            "related": ".xml"
+          }
         }
       },
       "System.Buffers/4.5.1": {
@@ -44,10 +52,14 @@
       "System.Runtime.CompilerServices.Unsafe/4.7.1": {
         "type": "package",
         "compile": {
-          "ref/netstandard2.0/System.Runtime.CompilerServices.Unsafe.dll": {}
+          "ref/netstandard2.0/System.Runtime.CompilerServices.Unsafe.dll": {
+            "related": ".xml"
+          }
         },
         "runtime": {
-          "lib/netcoreapp2.0/System.Runtime.CompilerServices.Unsafe.dll": {}
+          "lib/netcoreapp2.0/System.Runtime.CompilerServices.Unsafe.dll": {
+            "related": ".xml"
+          }
         }
       }
     }
@@ -192,19 +204,19 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\fere1\\.nuget\\packages\\": {}
+    "C:\\Users\\으노\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\fere1\\Documents\\GitHub\\Test3DMMO\\Server\\PacketGenerator\\PacketGenerator.csproj",
+      "projectUniqueName": "C:\\github\\Test3DMMO\\Server\\PacketGenerator\\PacketGenerator.csproj",
       "projectName": "PacketGenerator",
-      "projectPath": "C:\\Users\\fere1\\Documents\\GitHub\\Test3DMMO\\Server\\PacketGenerator\\PacketGenerator.csproj",
-      "packagesPath": "C:\\Users\\fere1\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\fere1\\Documents\\GitHub\\Test3DMMO\\Server\\PacketGenerator\\obj\\",
+      "projectPath": "C:\\github\\Test3DMMO\\Server\\PacketGenerator\\PacketGenerator.csproj",
+      "packagesPath": "C:\\Users\\으노\\.nuget\\packages\\",
+      "outputPath": "C:\\github\\Test3DMMO\\Server\\PacketGenerator\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\fere1\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\으노\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
@@ -253,7 +265,8 @@
           "net47",
           "net471",
           "net472",
-          "net48"
+          "net48",
+          "net481"
         ],
         "assetTargetFallback": true,
         "warn": true,
@@ -262,7 +275,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.201\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.400\\RuntimeIdentifierGraph.json"
       }
     }
   }

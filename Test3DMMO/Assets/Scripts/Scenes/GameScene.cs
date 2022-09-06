@@ -5,13 +5,8 @@ using UnityEngine.UI;
 
 public class GameScene : BaseScene
 {
-    //UI_GameScene _sceneUI;
-    public Text _debugText = GameObject.Find("Debug").transform.GetChild(0).GetComponent<Text>();
+    public UI_GameScene SceneUI { get; private set; }
 
-    public void Log(string str)
-    {
-        _debugText.text = str;
-    }
 
     protected override void Init()
     {
@@ -20,9 +15,14 @@ public class GameScene : BaseScene
         SceneType = Define.Scene.Game;
 
         Cursor.visible = true;
+        Cursor.lockState = CursorLockMode.Locked;
 
         Screen.SetResolution(640, 480, false);
+
+        SceneUI = Managers.UI.ShowSceneUI<UI_GameScene>();
     }
+
+
 
     public override void Clear()
     {

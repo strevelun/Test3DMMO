@@ -17,4 +17,10 @@ public class Define
         Ground = 6,
         Monster,
     }
+
+    public enum UIEvent
+    {
+        Click,
+        Drag,
+    }
 }
