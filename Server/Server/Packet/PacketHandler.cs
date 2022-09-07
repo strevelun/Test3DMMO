@@ -1,8 +1,9 @@
-﻿using Google.Protobuf;
+using Google.Protobuf;
 using Google.Protobuf.Protocol;
 using Server;
 using Server.DB;
 using Server.Game;
+using Server.Game.Object;
 using ServerCore;
 using System;
 using System.Collections.Generic;
@@ -28,8 +29,25 @@ class PacketHandler
 		room.Push(room.HandleMove, player, movePacket);
 	}
 
-	
-	public static void C_SkillHandler(PacketSession session, IMessage packet)
+    public static void C_MonstermoveHandler(PacketSession session, IMessage packet)
+    {
+        C_Monstermove movePacket = packet as C_Monstermove;
+        ClientSession clientSession = session as ClientSession;
+
+        // 오브젝트Id로 몬스터를 찾아서 패킷에 있는 현재위치와 몬스터의 도착위치가 같으면 몬스터의 State를 idle로 바꾼다.
+        Player player = clientSession.MyPlayer;
+        if (player == null)
+            return;
+
+        GameRoom room = player.Room;
+        if (room == null)
+            return;
+
+        room.Push(room.HandleMonsterMove, movePacket);
+    }
+
+
+    public static void C_SkillHandler(PacketSession session, IMessage packet)
 	{
 		C_Skill skillPacket = packet as C_Skill;
 		ClientSession clientSession = session as ClientSession;

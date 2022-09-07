@@ -1,4 +1,4 @@
-﻿using Google.Protobuf.Protocol;
+using Google.Protobuf.Protocol;
 using Microsoft.EntityFrameworkCore;
 using Server.Data;
 using Server.DB;
@@ -92,7 +92,7 @@ namespace Server
 		{
 			if (ServerState != PlayerServerState.ServerStateLobby)
 				return;
-
+            
 			LobbyPlayerInfo playerInfo = LobbyPlayers.Find(p => p.Name == enterGamePacket.Name);
 			if (playerInfo == null)
 				return;

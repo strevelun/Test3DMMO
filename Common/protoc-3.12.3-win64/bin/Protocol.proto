@@ -27,6 +27,8 @@ enum MsgId {
   C_PONG = 20;
   S_SKILL = 21;
   C_SKILL = 22;
+  S_MONSTERMOVE = 23;
+  C_MONSTERMOVE = 24;
 }
 
 enum CreatureState {
@@ -93,17 +95,31 @@ message S_Despawn {
 
 message C_Move {
   PositionInfo posInfo = 1;
-  CreatureState state = 3;
-  float animationBlend = 4;
-  float inputMagnitude = 5;
+  CreatureState state = 2;
+  float animationBlend = 3;
+  float inputMagnitude = 4;
 }
 
 message S_Move {
   int32 objectId = 1;
   PositionInfo posInfo = 2;
+  CreatureState state = 3;
+  float animationBlend = 4;
+  float inputMagnitude = 5;
+}
+
+message S_Monstermove {
+  int32 objectId = 1;
+  PositionInfo posInfo = 2;
+  PositionInfo destInfo = 3;
   CreatureState state = 4;
-  float animationBlend = 5;
-  float inputMagnitude = 6;
+  float speed = 5;
+}
+
+message C_Monstermove {
+  int32 objectId = 1;
+  PositionInfo posInfo = 2;
+  CreatureState state = 3;
 }
 
 message S_ChangeHp {

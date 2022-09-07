@@ -47,9 +47,9 @@ public class ObjectManager
 				PlayerController pc = Util.GetOrAddComponent<PlayerController>(go);
 				pc.Id = info.ObjectId;
 				pc.PosInfo = info.PosInfo;
+                go.transform.position = new Vector3(info.PosInfo.PosX, info.PosInfo.PosY, info.PosInfo.PosZ);
 
-				go.transform.position = new Vector3(info.PosInfo.PosX, info.PosInfo.PosY, info.PosInfo.PosZ);
-			}
+            }
 		}
 		else if (objectType == GameObjectType.Monster)
 		{
@@ -60,9 +60,10 @@ public class ObjectManager
 			MonsterController mc = Util.GetOrAddComponent<MonsterController>(go);
 			mc.Id = info.ObjectId;
 			mc.PosInfo = info.PosInfo;
-			//mc.Stat = info.StatInfo;
-		}
-	}
+            //mc.Stat = info.StatInfo;
+            go.transform.position = new Vector3(info.PosInfo.PosX, info.PosInfo.PosY, info.PosInfo.PosZ);
+        }
+    }
 
 	public void Remove(int id)
 	{

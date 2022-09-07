@@ -5,6 +5,9 @@ using UnityEngine;
 
 public class MonsterController : CreatureController
 {
+    public Vector3 DestPos { get; set; }
+
+
     protected override void Init()
     {
         Data.MonsterData data = null;
@@ -25,6 +28,8 @@ public class MonsterController : CreatureController
         MaxHp = data.stat.MaxHp;
 
         WorldPos = transform.position;
+
+        DestPos = WorldPos;
     }
 
     // Start is called before the first frame update
@@ -38,5 +43,51 @@ public class MonsterController : CreatureController
     {
         if (State == CreatureState.Dead)
             Debug.Log($"체력 : {Hp}... 사망");
+
+        
+        UpdateMove();
+
+        //WorldPos = transform.position;
+    }
+
+    void UpdateMove()
+    {
+
+        if(State == CreatureState.Idle)
+        {
+            
+        }
+        else if (State == CreatureState.Moving)
+        {
+            Move();
+        }
+    }
+
+    public void Move()
+    {
+        C_Monstermove move = new C_Monstermove();
+
+        move.ObjectId = Id;
+        move.PosInfo = PosInfo;
+
+        if (Vector3.Distance(WorldPos, DestPos) < 0.1f)
+        {
+            move.State = CreatureState.Idle;
+            Managers.Network.Send(move);
+            State = CreatureState.Idle;
+            return;
+        }
+
+        move.State = CreatureState.Moving;
+        Managers.Network.Send(move);
+
+        transform.position = Vector3.MoveTowards(transform.position, DestPos, Stat.Speed * Time.deltaTime);
+        WorldPos = transform.position;
+        Managers.UI.Log(WorldPos.ToString());
+    }
+
+    void SendMonsterMovePacket()
+    {
+
     }
 }

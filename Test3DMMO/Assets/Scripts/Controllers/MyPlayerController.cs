@@ -423,7 +423,6 @@ public class MyPlayerController : PlayerController
         */
         
         C_Skill skillPacket = new C_Skill();
-        Managers.UI.Log("2");
 
         SkillInfo skillInfo = new SkillInfo();
         skillInfo.Attacker = new ObjectInfo();
@@ -436,7 +435,6 @@ public class MyPlayerController : PlayerController
         {
             skillInfo.Victim = new ObjectInfo();
             skillInfo.Victim.Name = controller.Name;
-            Managers.UI.Log("4");
             skillInfo.Victim.Stat = controller.Stat;
             skillInfo.Victim.PosInfo = controller.PosInfo;
 

@@ -23,9 +23,76 @@ public class PacketHandler : MonoBehaviour
 		}
 	}
 
-	#region pended
+    public static void S_SkillHandler(PacketSession session, IMessage packet)
+    {
+        S_Skill skillPacket = packet as S_Skill;
+        GameObject go = Managers.Object.FindById(skillPacket.Info.Attacker.ObjectId);
+        PlayerController pc = go.GetComponent<PlayerController>();
+        pc.State = CreatureState.Skill;
+    }
 
-	public static void S_LeaveGameHandler(PacketSession session, IMessage packet)
+    public static void S_MoveHandler(PacketSession session, IMessage packet)
+    {
+        S_Move movePacket = packet as S_Move;
+
+        GameObject go = Managers.Object.FindById(movePacket.ObjectId);
+        if (go == null)
+            return;
+
+        if (Managers.Object.MyPlayer.Id == movePacket.ObjectId)
+            return;
+
+      
+        // State와 Blend 값 업데이트하고 UpdateAnimation
+
+        GameObjectType objectType = ObjectManager.GetObjectTypeById(movePacket.ObjectId);
+
+        if (objectType == GameObjectType.Player)
+        {
+            go.transform.position = new Vector3(movePacket.PosInfo.PosX, movePacket.PosInfo.PosY, movePacket.PosInfo.PosZ);
+            go.transform.rotation = Quaternion.Euler(go.transform.rotation.x, movePacket.PosInfo.RotY, go.transform.rotation.z);
+
+            PlayerController pc = go.GetComponent<PlayerController>();
+            pc.State = movePacket.State;
+            pc._animationBlend = movePacket.AnimationBlend;
+            pc._inputMagnitude = movePacket.InputMagnitude;
+
+        }
+   //     else if (objectType == GameObjectType.Monster)
+   //     {
+   //         MonsterController mc = Util.GetOrAddComponent<MonsterController>(go);
+   //         mc.State = movePacket.State;
+			////mc.PosInfo.MergeFrom(movePacket.PosInfo);
+
+			//mc.Move(new Vector3(movePacket.PosInfo.PosX, movePacket.PosInfo.PosY, movePacket.PosInfo.PosZ));
+   //     }
+
+
+
+
+        // TODO make these a property
+
+
+    }
+
+	public static void S_MonstermoveHandler(PacketSession session, IMessage packet)
+    {
+        S_Monstermove movePacket = packet as S_Monstermove;
+
+        GameObject go = Managers.Object.FindById(movePacket.ObjectId);
+        if (go == null)
+            return;
+
+        MonsterController mc = Util.GetOrAddComponent<MonsterController>(go);
+		mc.Id = movePacket.ObjectId;
+        mc.State = movePacket.State;
+		mc.Stat.Speed = movePacket.Speed;
+		mc.DestPos = new Vector3(movePacket.DestInfo.PosX, movePacket.DestInfo.PosY, movePacket.DestInfo.PosZ);
+    }
+
+    #region pended
+
+    public static void S_LeaveGameHandler(PacketSession session, IMessage packet)
 	{
 		S_LeaveGame leaveGameHandler = packet as S_LeaveGame;
 		Managers.Object.Clear();
@@ -40,53 +107,7 @@ public class PacketHandler : MonoBehaviour
 		}
 	}
 
-	public static void S_SkillHandler(PacketSession session, IMessage packet)
-    {
-		S_Skill skillPacket = packet as S_Skill;
-		GameObject go = Managers.Object.FindById(skillPacket.Info.Attacker.ObjectId);
-		PlayerController pc = go.GetComponent<PlayerController>();
-		pc.State = CreatureState.Skill;
-    }
 
-	public static void S_MoveHandler(PacketSession session, IMessage packet)
-	{
-		S_Move movePacket = packet as S_Move;
-
-		GameObject go = Managers.Object.FindById(movePacket.ObjectId);
-		if (go == null)
-			return;
-
-		if (Managers.Object.MyPlayer.Id == movePacket.ObjectId)
-			return;
-
-        go.transform.position = new Vector3(movePacket.PosInfo.PosX, movePacket.PosInfo.PosY, movePacket.PosInfo.PosZ);
-        go.transform.rotation = Quaternion.Euler(go.transform.rotation.x, movePacket.PosInfo.RotY, go.transform.rotation.z);
-
-        // State와 Blend 값 업데이트하고 UpdateAnimation
-
-        GameObjectType objectType = ObjectManager.GetObjectTypeById(movePacket.ObjectId);
-
-        if (objectType == GameObjectType.Player)
-        {
-            PlayerController pc = go.GetComponent<PlayerController>();
-            pc.State = movePacket.State;
-            pc._animationBlend = movePacket.AnimationBlend;
-            pc._inputMagnitude = movePacket.InputMagnitude;
-
-        }
-        else if (objectType == GameObjectType.Monster)
-        {
-            MonsterController mc = Util.GetOrAddComponent<MonsterController>(go);
-			mc.State = movePacket.State;
-        }
-
-
-		
-
-		// TODO make these a property
-
-		
-	}
 
 	public static void S_ChangeHpHandler(PacketSession session, IMessage packet)
 	{

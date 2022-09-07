@@ -1,9 +1,11 @@
-﻿using Google.Protobuf.Protocol;
+using Google.Protobuf.Protocol;
+using Google.Protobuf.WellKnownTypes;
 using ServerCore;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace Server.Game
 {
@@ -78,10 +80,31 @@ namespace Server.Game
 			return new Vector3(a.x - b.x, a.y - b.y, a.z - b.z);
 		}
 
+      
+
 		public float magnitude { get { return (float)Math.Sqrt(sqrMagnitude); } }
 		public float sqrMagnitude { get { return (x * x + y * y); } }
 		public float cellDistFromZero { get { return Math.Abs(x) + Math.Abs(y); } }
-	}
+
+        public static Vector3 Lerp(Vector3 a, Vector3 b, float t)
+        {
+            if (t < 0f)
+                t = 0f;
+
+            if (t > 1f)
+                t = 1f;
+
+            return new Vector3(a.x + (b.x - a.x) * t, a.y + (b.y - a.y) * t, a.z + (b.z - a.z) * t);
+        }
+
+        public static float Distance(Vector3 a, Vector3 b)
+        {
+            float num = a.x - b.x;
+            float num2 = a.y - b.y;
+            float num3 = a.z - b.z;
+            return (float)Math.Sqrt(num * num + num2 * num2 + num3 * num3);
+        }
+    }
 	/*
 	public class Map
 	{

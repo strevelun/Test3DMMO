@@ -17,6 +17,7 @@ namespace Server.Game
 		Dictionary<int, Monster> _monsters = new Dictionary<int, Monster>();
 
 
+
 		//public Map Map { get; private set; } = new Map();
 		
 		public void Init(int mapId)
@@ -35,10 +36,11 @@ namespace Server.Game
             }
         }
 		
+
 		// 누군가 주기적으로 호출해줘야 한다
 		public void Update()
 		{
-			Flush();
+            Flush();
 		}
 
 		Random _rand = new Random();
@@ -80,7 +82,8 @@ namespace Server.Game
             else if (type == GameObjectType.Monster)
             {
                 Monster monster = gameObject as Monster;
-                _monsters.Add(1, monster);
+               
+                _monsters.Add(monster.Id, monster);
 
                 monster.Info.Name = gameObject.Info.Name;
                 monster.Room = this;

@@ -3,6 +3,7 @@ using Server.Data;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks.Dataflow;
 
 namespace Server.Game.Object
 {
@@ -11,8 +12,9 @@ namespace Server.Game.Object
 		public int TemplateId { get; private set; }
 		Player _target;
 		IJob _job;
+        public Vector3 DestPos { get; private set; }
 
-		public Monster()
+        public Monster()
 		{
 			ObjectType = GameObjectType.Monster;
 		}
@@ -26,16 +28,37 @@ namespace Server.Game.Object
 			Stat.MergeFrom(monsterData.stat);
 			State = CreatureState.Idle;
 
+            DestPos = new Vector3(100f, 0f, 100f);
+
+            // 60fps
+            Speed = 5f;
             // 초기화할 때 스폰 패킷
 		}
 
         void BroadcastMove()
         {
-            // 다른 플레이어한테도 알려준다
-            S_Move movePacket = new S_Move();
+            S_Monstermove movePacket = new S_Monstermove();
+
+            if (Vector3.Distance(WorldPos, DestPos) < 1f)
+            {
+                movePacket.State = CreatureState.Idle;
+            }
+            else
+                movePacket.State = CreatureState.Moving;
+
             movePacket.ObjectId = Id;
             movePacket.PosInfo = PosInfo;
+            movePacket.DestInfo = new PositionInfo();
+            movePacket.DestInfo.PosX = DestPos.x;
+            movePacket.DestInfo.PosY = DestPos.y;
+            movePacket.DestInfo.PosZ = DestPos.z;
+            movePacket.Speed = Speed;
 
+            //WorldPos = new Vector3(PosInfo.PosX, PosInfo.PosY, PosInfo.PosZ);
+
+            //Console.WriteLine(PosInfo);
+            
+            
             Room.Broadcast(movePacket);
         }
 
@@ -57,17 +80,18 @@ namespace Server.Game.Object
 					break;
 			}
 
-			// 5프레임 (0.2초마다 한번씩 Update)
+			// 30 fps
 			if (Room != null)
-				_job = Room.PushAfter(200, Update);
+				_job = Room.PushAfter(20, Update);
 		}
 
 		protected virtual void UpdateIdle() {
-            BroadcastMove();
+            State = CreatureState.Moving;
         }
 
 		protected virtual void UpdateMoving() {
-            
+
+            BroadcastMove();
         }
 
 		protected virtual void UpdateSkill() { 

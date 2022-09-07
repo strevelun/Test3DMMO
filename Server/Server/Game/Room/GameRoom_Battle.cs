@@ -50,6 +50,25 @@ namespace Server.Game
 			
 			Console.WriteLine($"C_Move ({movePacket.PosInfo.PosX}, {movePacket.PosInfo.PosY}, {movePacket.PosInfo.PosZ}, {movePacket.PosInfo.RotY}, {movePacket.State}, {movePacket.AnimationBlend}, {movePacket.InputMagnitude})");
 		}
+
+        public void HandleMonsterMove(C_Monstermove movePacket)
+        {
+            Monster monster;
+
+            if(!_monsters.TryGetValue(movePacket.ObjectId, out monster))
+            {
+                Console.WriteLine($"{movePacket.ObjectId}은 서버 데이터에 존재하지 않음");
+                return;
+            }
+
+            monster.WorldPos = new Vector3(movePacket.PosInfo.PosX, movePacket.PosInfo.PosY, movePacket.PosInfo.PosZ);
+
+            if(Vector3.Distance(monster.WorldPos, monster.DestPos) < 0.1f)
+            {
+                monster.WorldPos = monster.DestPos;
+                monster.State = CreatureState.Idle;
+            }
+        }
 		
 		public void HandleSkill(Player player, C_Skill skillPacket)
 		{
