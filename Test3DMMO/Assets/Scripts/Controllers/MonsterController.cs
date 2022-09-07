@@ -19,7 +19,8 @@ public class MonsterController : CreatureController
             return;
         }
 
-        Id = data.id;
+        Stat = data.stat;
+        //Id = data.id;
         Name = data.name;
         MoveSpeed = data.stat.Speed;
         Hp = data.stat.MaxHp;
@@ -27,6 +28,7 @@ public class MonsterController : CreatureController
         Damage = data.stat.Attack;
         MaxHp = data.stat.MaxHp;
 
+        // 서버에서 받은 위치로 설정해야
         WorldPos = transform.position;
 
         DestPos = WorldPos;
@@ -44,45 +46,37 @@ public class MonsterController : CreatureController
         if (State == CreatureState.Dead)
             Debug.Log($"체력 : {Hp}... 사망");
 
-        
-        UpdateMove();
+        if (State == CreatureState.Idle)
+        {
+            State = CreatureState.Moving;
+        }
+        else if (State == CreatureState.Moving)
+        {
+            UpdateMove();
+        }
+
 
         //WorldPos = transform.position;
     }
 
-    void UpdateMove()
+    public void UpdateMove()
     {
-
-        if(State == CreatureState.Idle)
-        {
-            
-        }
-        else if (State == CreatureState.Moving)
-        {
-            Move();
-        }
-    }
-
-    public void Move()
-    {
+        Debug.Log($"{transform.position}, {DestPos}, {Stat.Speed} * {Time.deltaTime}");
         C_Monstermove move = new C_Monstermove();
 
         move.ObjectId = Id;
         move.PosInfo = PosInfo;
 
-        if (Vector3.Distance(WorldPos, DestPos) < 0.1f)
-        {
-            move.State = CreatureState.Idle;
-            Managers.Network.Send(move);
-            State = CreatureState.Idle;
-            return;
-        }
+        //if (Vector3.Distance(WorldPos, DestPos) < 0.7f)
+        //{
+        //    move.State = CreatureState.Idle;
+        //    Managers.Network.Send(move);
+        //    State = CreatureState.Idle;
+        //    return;
+        //}
 
-        move.State = CreatureState.Moving;
-        Managers.Network.Send(move);
-
-        transform.position = Vector3.MoveTowards(transform.position, DestPos, Stat.Speed * Time.deltaTime);
-        WorldPos = transform.position;
+        WorldPos = Vector3.MoveTowards(transform.position, DestPos, Stat.Speed * Time.deltaTime);
+        //WorldPos = transform.position;
         Managers.UI.Log(WorldPos.ToString());
     }
 

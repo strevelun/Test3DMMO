@@ -104,6 +104,7 @@ public class MyPlayerController : PlayerController
         WorldPos = transform.position;
 
         Name = "테스트 이름";
+       
         Stat.Attack = 5;
         Stat.Hp = 10;
         Stat.MaxHp = 10;
@@ -437,7 +438,7 @@ public class MyPlayerController : PlayerController
             skillInfo.Victim.Name = controller.Name;
             skillInfo.Victim.Stat = controller.Stat;
             skillInfo.Victim.PosInfo = controller.PosInfo;
-
+            
             skillInfo.Victim.ObjectId = controller.Id;
         }
 

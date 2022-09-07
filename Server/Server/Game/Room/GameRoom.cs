@@ -31,6 +31,7 @@ namespace Server.Game
                 MonsterData data;
                 DataManager.MonsterDict.TryGetValue(1, out data);
                 monster.Info.Name = data.name;
+                monster.Stat.MergeFrom(data.stat);
                 monster.Init(1);
                 EnterGame(monster);
             }
@@ -83,12 +84,16 @@ namespace Server.Game
             {
                 Monster monster = gameObject as Monster;
                
-                _monsters.Add(monster.Id, monster);
 
                 monster.Info.Name = gameObject.Info.Name;
                 monster.Room = this;
                 monster.WorldPos = new Vector3(3.2f, 0f, 3.7f);
+                monster.DestPos = monster.WorldPos;
                 monster.Info.MergeFrom(gameObject.Info);
+                monster.Hp = gameObject.Hp;
+
+
+                _monsters.Add(monster.Id, monster);
 
                 monster.Update();
             }

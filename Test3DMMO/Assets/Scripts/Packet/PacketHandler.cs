@@ -87,7 +87,12 @@ public class PacketHandler : MonoBehaviour
 		mc.Id = movePacket.ObjectId;
         mc.State = movePacket.State;
 		mc.Stat.Speed = movePacket.Speed;
+
+		// 서버로부터 오차 조정
+		mc.WorldPos = new Vector3(movePacket.PosInfo.PosX, movePacket.PosInfo.PosY, movePacket.PosInfo.PosZ);
+
 		mc.DestPos = new Vector3(movePacket.DestInfo.PosX, movePacket.DestInfo.PosY, movePacket.DestInfo.PosZ);
+		Managers.UI.Log(mc.DestPos.ToString());
     }
 
     #region pended

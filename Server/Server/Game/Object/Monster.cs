@@ -10,9 +10,13 @@ namespace Server.Game.Object
     public class Monster : GameObject
 	{
 		public int TemplateId { get; private set; }
-		Player _target;
+        public Vector3 DestPos { get; set; }
+		
+        Player _target;
 		IJob _job;
-        public Vector3 DestPos { get; private set; }
+        float _sightRange = 10.0f;
+        
+
 
         public Monster()
 		{
@@ -28,8 +32,6 @@ namespace Server.Game.Object
 			Stat.MergeFrom(monsterData.stat);
 			State = CreatureState.Idle;
 
-            DestPos = new Vector3(100f, 0f, 100f);
-
             // 60fps
             Speed = 5f;
             // 초기화할 때 스폰 패킷
@@ -39,12 +41,10 @@ namespace Server.Game.Object
         {
             S_Monstermove movePacket = new S_Monstermove();
 
-            if (Vector3.Distance(WorldPos, DestPos) < 1f)
-            {
-                movePacket.State = CreatureState.Idle;
-            }
-            else
-                movePacket.State = CreatureState.Moving;
+            //if (Vector3.Distance(WorldPos, DestPos) < 0.01f)
+            //    movePacket.State = CreatureState.Idle;
+            //else
+            //    movePacket.State = CreatureState.Moving;
 
             movePacket.ObjectId = Id;
             movePacket.PosInfo = PosInfo;
@@ -58,6 +58,7 @@ namespace Server.Game.Object
 
             //Console.WriteLine(PosInfo);
             
+
             
             Room.Broadcast(movePacket);
         }
@@ -80,7 +81,6 @@ namespace Server.Game.Object
 					break;
 			}
 
-			// 30 fps
 			if (Room != null)
 				_job = Room.PushAfter(20, Update);
 		}
@@ -89,16 +89,55 @@ namespace Server.Game.Object
             State = CreatureState.Moving;
         }
 
-		protected virtual void UpdateMoving() {
+        Random rand = new Random();
 
-            BroadcastMove();
+		protected virtual void UpdateMoving() 
+        {
+            // lock
+
+            if (ObjectManager.Instance.Players.Count > 0)
+            {
+                float min = 9999999f;
+
+                // 일정 거리 내에 플레이어가 존재한다면 그 플레이어의 좌표로 직선 이동
+
+                foreach (Player p in ObjectManager.Instance.Players.Values)
+                {
+                    float temp = Vector3.Distance(p.Pos, WorldPos);
+
+                    if (temp < min && temp <= _sightRange)
+                    {
+                        min = temp;
+                        _target = p;
+                        DestPos = _target.Pos;
+                    }
+                }
+            }
+
+            if (Vector3.Distance(WorldPos, DestPos) < 0.7f)
+            {
+                if (_target == null)
+                {
+                    float a = (float)rand.Next(1, 50);
+                    float b = (float)rand.Next(1, 50);
+                    DestPos = new Vector3(a, 0f, b);
+
+                    BroadcastMove();
+                }
+                return;
+            }
+
+
+
+            WorldPos = Vector3.MoveTowards(WorldPos, DestPos, Speed * 0.016f);
+            Console.WriteLine($"{WorldPos.x},\t {WorldPos.z} \t({Vector3.Distance(WorldPos, DestPos)}) =======>\t {DestPos.x},\t {DestPos.z}");
+
         }
 
 		protected virtual void UpdateSkill() { 
         }
 
-		protected virtual void UpdateDead() { 
-
+		protected virtual void UpdateDead() {
         }
 
 	}

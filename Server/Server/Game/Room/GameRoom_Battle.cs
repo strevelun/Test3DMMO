@@ -53,6 +53,8 @@ namespace Server.Game
 
         public void HandleMonsterMove(C_Monstermove movePacket)
         {
+            // (클라이언트 여러개로부터) 목적지에 다왔어요 패킷이 도착하면 서버좌표로 조정한 후 PosInfo와 destPos를 한번만 새롭게 내려보냄
+
             Monster monster;
 
             if(!_monsters.TryGetValue(movePacket.ObjectId, out monster))
@@ -68,6 +70,8 @@ namespace Server.Game
                 monster.WorldPos = monster.DestPos;
                 monster.State = CreatureState.Idle;
             }
+
+            
         }
 		
 		public void HandleSkill(Player player, C_Skill skillPacket)
@@ -100,10 +104,16 @@ namespace Server.Game
                     return;
                 }
 
+
+
                 m.Hp -= p.TotalAttack;
+
+                Console.WriteLine($"현재 체력 : {m.Hp}");
 
                 if (m.Hp <= 0)
                     m.State = CreatureState.Dead;
+
+                // 플레이어 위치로 destPos
             }
 
             ObjectManager.Instance.Find(player.Id).State = CreatureState.Skill;

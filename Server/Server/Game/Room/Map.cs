@@ -80,9 +80,22 @@ namespace Server.Game
 			return new Vector3(a.x - b.x, a.y - b.y, a.z - b.z);
 		}
 
-      
+        public static Vector3 MoveTowards(Vector3 current, Vector3 target, float maxDistanceDelta)
+        {
+            float num = target.x - current.x;
+            float num2 = target.y - current.y;
+            float num3 = target.z - current.z;
+            float num4 = num * num + num2 * num2 + num3 * num3;
+            if (num4 == 0f || (maxDistanceDelta >= 0f && num4 <= maxDistanceDelta * maxDistanceDelta))
+            {
+                return target;
+            }
 
-		public float magnitude { get { return (float)Math.Sqrt(sqrMagnitude); } }
+            float num5 = (float)Math.Sqrt(num4);
+            return new Vector3(current.x + num / num5 * maxDistanceDelta, current.y + num2 / num5 * maxDistanceDelta, current.z + num3 / num5 * maxDistanceDelta);
+        }
+
+        public float magnitude { get { return (float)Math.Sqrt(sqrMagnitude); } }
 		public float sqrMagnitude { get { return (x * x + y * y); } }
 		public float cellDistFromZero { get { return Math.Abs(x) + Math.Abs(y); } }
 

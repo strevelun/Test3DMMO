@@ -5,8 +5,9 @@
         "name": "slime",
         "stat": {
             "level": "1",
-            "maxHp": "10",
-            "attack": "5",
+            "hp": "60",
+            "maxHp": "60",
+            "attack": "20",
             "speed": "5.0",
             "totalExp": "10"
         },
