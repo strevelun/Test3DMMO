@@ -15,7 +15,7 @@ namespace Server.Game.Object
         Player _target;
 		IJob _job;
         float _sightRange = 10.0f;
-        
+        bool _arrived = false;
 
 
         public Monster()
@@ -63,8 +63,14 @@ namespace Server.Game.Object
             Room.Broadcast(movePacket);
         }
 
+        // 1. 몬스터가 가만히 있는 상황에서 계속 주변 플레이어 탐색
+        // 2. 몬스터가 이동 중 쫓는 플레이어가 없을 경우 주변 플레이어 탐색. 
+
+        // 플레이어를 쫓다가 플레이어가 시야 밖으로 나갈경우 다시 새로운 destPos를 설정하고 순찰
+
         public override void Update()
 		{
+
 			switch (State)
 			{
 				case CreatureState.Idle:
@@ -91,45 +97,54 @@ namespace Server.Game.Object
 
         Random rand = new Random();
 
-		protected virtual void UpdateMoving() 
+        protected virtual void UpdateMoving()
         {
-            // lock
+            // 단순 목적지 직선이동 or 플레이어 위치로 길찾기
 
-            if (ObjectManager.Instance.Players.Count > 0)
+            if (ObjectManager.Instance.Players.Count > 0) // 플레이어 위치가 계속 변하기 떄문에 항상 주변 탐색
             {
                 float min = 9999999f;
 
-                // 일정 거리 내에 플레이어가 존재한다면 그 플레이어의 좌표로 직선 이동
+                bool flag = false;
 
                 foreach (Player p in ObjectManager.Instance.Players.Values)
                 {
-                    float temp = Vector3.Distance(p.Pos, WorldPos);
+                    float temp = Vector3.Distance(p.WorldPos, WorldPos);
 
                     if (temp < min && temp <= _sightRange)
                     {
                         min = temp;
                         _target = p;
-                        DestPos = _target.Pos;
+                        flag = true;
+                        DestPos = _target.WorldPos;
+
+                        Vector3 t = DestPos;
+                        t.y = 0f;
+                        DestPos = t;
                     }
                 }
+
+                if (!flag)
+                    _target = null;
             }
 
             if (Vector3.Distance(WorldPos, DestPos) < 0.7f)
-            {
-                if (_target == null)
-                {
-                    float a = (float)rand.Next(1, 50);
-                    float b = (float)rand.Next(1, 50);
-                    DestPos = new Vector3(a, 0f, b);
+                _arrived = true;
 
-                    BroadcastMove();
-                }
+            // 목적지에 도착했고 타겟이 없는 경우
+            if (_arrived && _target == null)
+            {
+                float a = (float)rand.Next(1, 50);
+                float b = (float)rand.Next(1, 50);
+                DestPos = new Vector3(a, 0f, b);
+                _arrived = false; // 목적지에 도착할 때까지 랜덤 좌표 생성x
+
+                BroadcastMove();
                 return;
             }
 
-
-
             WorldPos = Vector3.MoveTowards(WorldPos, DestPos, Speed * 0.016f);
+            BroadcastMove();
             Console.WriteLine($"{WorldPos.x},\t {WorldPos.z} \t({Vector3.Distance(WorldPos, DestPos)}) =======>\t {DestPos.x},\t {DestPos.z}");
 
         }

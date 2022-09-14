@@ -23,7 +23,7 @@ namespace Server.Game
 
 			// 서버에서 플레이어 좌표 수정
 			Player p = ObjectManager.Instance.Find(info.ObjectId);
-			p.Pos = new Vector3(movePosInfo.PosX, movePosInfo.PosY, movePosInfo.PosZ);
+			p.WorldPos = new Vector3(movePosInfo.PosX, movePosInfo.PosY, movePosInfo.PosZ); // Pos -> WorldPos
 			p.RotY = movePacket.PosInfo.RotY;
 			p.State = movePacket.State;
 			p._animationBlend = movePacket.AnimationBlend;
@@ -31,7 +31,7 @@ namespace Server.Game
 
             // 게임룸 딕셔너리 좌표 수정
             _players.TryGetValue(player.Id, out p);
-            p.Pos = new Vector3(movePosInfo.PosX, movePosInfo.PosY, movePosInfo.PosZ);
+            p.WorldPos = new Vector3(movePosInfo.PosX, movePosInfo.PosY, movePosInfo.PosZ);
             p.RotY = movePacket.PosInfo.RotY;
             p.State = movePacket.State;
             p._animationBlend = movePacket.AnimationBlend;
@@ -70,8 +70,6 @@ namespace Server.Game
                 monster.WorldPos = monster.DestPos;
                 monster.State = CreatureState.Idle;
             }
-
-            
         }
 		
 		public void HandleSkill(Player player, C_Skill skillPacket)

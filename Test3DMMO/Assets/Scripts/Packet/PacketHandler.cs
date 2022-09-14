@@ -92,7 +92,7 @@ public class PacketHandler : MonoBehaviour
 		mc.WorldPos = new Vector3(movePacket.PosInfo.PosX, movePacket.PosInfo.PosY, movePacket.PosInfo.PosZ);
 
 		mc.DestPos = new Vector3(movePacket.DestInfo.PosX, movePacket.DestInfo.PosY, movePacket.DestInfo.PosZ);
-		Managers.UI.Log(mc.DestPos.ToString());
+		Managers.UI.Log(mc.WorldPos.ToString());
     }
 
     #region pended

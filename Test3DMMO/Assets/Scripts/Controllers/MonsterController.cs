@@ -75,9 +75,10 @@ public class MonsterController : CreatureController
         //    return;
         //}
 
-        WorldPos = Vector3.MoveTowards(transform.position, DestPos, Stat.Speed * Time.deltaTime);
+        //WorldPos = Vector3.MoveTowards(transform.position, DestPos, Stat.Speed * Time.deltaTime);
+        transform.position = WorldPos;
         //WorldPos = transform.position;
-        Managers.UI.Log(WorldPos.ToString());
+        //Managers.UI.Log(WorldPos.ToString());
     }
 
     void SendMonsterMovePacket()
