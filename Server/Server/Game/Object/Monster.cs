@@ -16,7 +16,8 @@ namespace Server.Game.Object
 		IJob _job;
         float _sightRange = 10.0f;
         bool _arrived = false;
-
+        bool _nodeArrived = false;
+        float _chaseCellDist = 5f;
 
         public Monster()
 		{
@@ -100,14 +101,13 @@ namespace Server.Game.Object
         protected virtual void UpdateMoving()
         {
             // 단순 목적지 직선이동 or 플레이어 위치로 길찾기
-
             if (ObjectManager.Instance.Players.Count > 0) // 플레이어 위치가 계속 변하기 떄문에 항상 주변 탐색
             {
                 float min = 9999999f;
 
                 bool flag = false;
 
-                foreach (Player p in ObjectManager.Instance.Players.Values)
+                foreach (Player p in Room._players.Values)
                 {
                     float temp = Vector3.Distance(p.WorldPos, WorldPos);
 
@@ -124,18 +124,24 @@ namespace Server.Game.Object
                     }
                 }
 
-                if (!flag)
+                if (!flag) // 주변에 조건에 맞는 플레이어가 없으면 null로 세팅
                     _target = null;
             }
 
             if (Vector3.Distance(WorldPos, DestPos) < 0.7f)
+            {
                 _arrived = true;
+            }
 
             // 목적지에 도착했고 타겟이 없는 경우
-            if (_arrived && _target == null)
+            if ((_arrived && _target == null))
             {
-                float a = (float)rand.Next(1, 50);
-                float b = (float)rand.Next(1, 50);
+                float a, b;
+                do {
+                    a = (float)rand.Next(1, 35);
+                    b = (float)rand.Next(1, 20);
+                } while (!Room.Map.CanGo(new Vector3(a, 0f, b)));
+
                 DestPos = new Vector3(a, 0f, b);
                 _arrived = false; // 목적지에 도착할 때까지 랜덤 좌표 생성x
 
@@ -143,9 +149,73 @@ namespace Server.Game.Object
                 return;
             }
 
-            WorldPos = Vector3.MoveTowards(WorldPos, DestPos, Speed * 0.016f);
-            BroadcastMove();
-            Console.WriteLine($"{WorldPos.x},\t {WorldPos.z} \t({Vector3.Distance(WorldPos, DestPos)}) =======>\t {DestPos.x},\t {DestPos.z}");
+
+
+                // 1. DestPos가 정해졌으면 A*를 돌린다.
+                // 2. 첫번째 노드에 도달할 때까지 MoveTowards. 동시에 실시간으로 주변 탐색
+
+
+            List<Vector3> path = Room.Map.FindPath(WorldPos, DestPos, checkObjects: true);
+            
+            
+
+            if (path.Count < 2 || path.Count > 100)
+            {
+                _arrived = true;
+                Console.WriteLine("리턴");
+                WorldPos = new Vector3(path[0].x, 0f, path[0].z);
+                BroadcastMove();
+                return;
+            }
+
+            //if (!_nodeArrived) 
+            {
+                if (Vector3.Distance(WorldPos, new Vector3(path[1].x, 0f, path[1].z)) < 0.1f)
+                {
+                    WorldPos = Vector3.MoveTowards(WorldPos, new Vector3(path[1].x, 0f, path[1].z), Speed * 0.016f);
+                    BroadcastMove();
+                    return;
+                    //_nodeArrived = true;
+                }
+
+                // 도달할 때까지 첫번쨰 노드로 이동
+                WorldPos = Vector3.MoveTowards(WorldPos, new Vector3(path[1].x, 0f, path[1].z), Speed * 0.016f);
+                BroadcastMove();
+
+                Console.WriteLine($"{WorldPos.x},\t {WorldPos.z} \t({Vector3.Distance(WorldPos, new Vector3(path[1].x, 0f, path[1].z))}) =======>\t {path[1].x},\t {path[1].z}");
+            }
+
+
+
+
+
+
+
+
+
+
+
+
+
+            //if (!_nodeArrived)
+            //{
+                
+            //    if (Vector3.Distance(WorldPos, new Vector3(path[1].x, 0f, path[1].y)) > 0.1f)
+            //    {
+            //        WorldPos = Vector3.MoveTowards(WorldPos, new Vector3(path[1].x, 0f, path[1].y), Speed * 0.016f);
+            //        Console.WriteLine($"{WorldPos.x}, {WorldPos.z}");
+            //        BroadcastMove();
+            //        _nodeArrived = false;
+            //        return;
+            //    }
+            //    else
+            //        _nodeArrived = true;
+
+            //}
+
+            //WorldPos = Vector3.MoveTowards(WorldPos, DestPos, Speed * 0.016f);
+            //BroadcastMove();
+            // Console.WriteLine($"{WorldPos.x},\t {WorldPos.z} \t({Vector3.Distance(WorldPos, DestPos)}) =======>\t {DestPos.x},\t {DestPos.z}");
 
         }
 

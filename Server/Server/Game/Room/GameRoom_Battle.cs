@@ -142,7 +142,7 @@ namespace Server.Game
 			{
 				case SkillType.SkillAuto:
 					{
-						Vector2Int skillPos = player.GetFrontCellPos(info.PosInfo.MoveDir);
+						Vector3 skillPos = player.GetFrontCellPos(info.PosInfo.MoveDir);
 						GameObject target = Map.Find(skillPos);
 						if (target != null)
 						{

@@ -13,16 +13,16 @@ namespace Server.Game
 	{
 		public int RoomId { get; set; }
 
-		Dictionary<int, Player> _players = new Dictionary<int, Player>();
-		Dictionary<int, Monster> _monsters = new Dictionary<int, Monster>();
+		public Dictionary<int, Player> _players = new Dictionary<int, Player>();
+		public Dictionary<int, Monster> _monsters = new Dictionary<int, Monster>();
 
 
 
-		//public Map Map { get; private set; } = new Map();
+		public Map Map { get; private set; } = new Map();
 		
 		public void Init(int mapId)
 		{
-            //Map.LoadMap(mapId);
+            Map.LoadMap();
 
             //// TEMP
             for (int i = 0; i < 1; i++)
@@ -87,7 +87,7 @@ namespace Server.Game
 
                 monster.Info.Name = gameObject.Info.Name;
                 monster.Room = this;
-                monster.WorldPos = new Vector3(3.2f, 0f, 3.7f);
+                monster.WorldPos = new Vector3(12f, 0f, 12f);
                 monster.DestPos = monster.WorldPos;
                 monster.Info.MergeFrom(gameObject.Info);
                 monster.Hp = gameObject.Hp;
