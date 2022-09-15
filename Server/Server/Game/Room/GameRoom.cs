@@ -87,7 +87,7 @@ namespace Server.Game
 
                 monster.Info.Name = gameObject.Info.Name;
                 monster.Room = this;
-                monster.WorldPos = new Vector3(12f, 0f, 12f);
+                monster.WorldPos = new Vector3(15f, 0f, 15f);
                 monster.DestPos = monster.WorldPos;
                 monster.Info.MergeFrom(gameObject.Info);
                 monster.Hp = gameObject.Hp;

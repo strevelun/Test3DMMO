@@ -11,6 +11,8 @@ namespace Server.Game.Object
 	{
 		public int TemplateId { get; private set; }
         public Vector3 DestPos { get; set; }
+        private List<Vector3> _path;
+        private int _curPathPos = 0;
 		
         Player _target;
 		IJob _job;
@@ -46,7 +48,7 @@ namespace Server.Game.Object
             do
             {
                 a = (float)rand.Next(1, 35);
-                b = (float)rand.Next(1, 20);
+                b = (float)rand.Next(1, 35);
             } while (!Room.Map.CanGo(new Vector3(a, 0f, b)));
 
             return new Vector3(a, 0f, b);
@@ -110,7 +112,7 @@ namespace Server.Game.Object
         }
 
         Vector3 prevPos;
-        bool flag = true;
+        bool flag1 = true;
 
         protected virtual void UpdateMoving()
         {
@@ -135,6 +137,8 @@ namespace Server.Game.Object
                         Vector3 t = DestPos;
                         t.y = 0f;
                         DestPos = t;
+                        _path = Room.Map.FindPath(WorldPos, DestPos, checkObjects: true);
+                        _curPathPos = 1;
                     }
                 }
 
@@ -152,51 +156,67 @@ namespace Server.Game.Object
             {
                 DestPos = GetRandomPos();
                 _arrived = false; // 목적지에 도착할 때까지 랜덤 좌표 생성x
-
+                _path = Room.Map.FindPath(WorldPos, DestPos, checkObjects: true);
+                _curPathPos = 1;
                 BroadcastMove();
                 return;
             }
 
-            List<Vector3> path = Room.Map.FindPath(WorldPos, DestPos, checkObjects: true);
-
-            if (path.Count < 2 || path.Count > 100)
+            if (_target != null)
             {
-                _arrived = true;
-                Console.WriteLine("리턴");
-                //WorldPos = new Vector3(path[0].x, 0f, path[0].z);
-                BroadcastMove();
-                return;
-            }
+                // 타겟이 계속 움직인다면
 
-
-            if (flag && _target == null)
-            {
-                prevPos = path[0];
-                flag = false;
-            }
-            else if(!flag && _target == null)
-            {
-                if (prevPos == path[1])
+                if (_path.Count < 2 || _path.Count > 100)
                 {
-                    DestPos = GetRandomPos();
-                    flag = true;
-                    Console.WriteLine("플래그");
+                    _arrived = true;
+                    Console.WriteLine("플레이어의 위치에 도착함");
+                    //WorldPos = new Vector3(path[0].x, 0f, path[0].z);
+                    _curPathPos = 1;
+                    BroadcastMove();
                     return;
                 }
-                flag = true;
+
+
+                if (flag1 && _target == null)
+                {
+                    prevPos = _path[0];
+                    flag1 = false;
+                }
+                else if (!flag1 && _target == null)
+                {
+                    if (prevPos == _path[1])
+                    {
+                        DestPos = GetRandomPos();
+                        flag1 = true;
+                        Console.WriteLine("플래그");
+                        return;
+                    }
+                    flag1 = true;
+                }
             }
 
-            if (Vector3.Distance(WorldPos, new Vector3(path[1].x, 0f, path[1].z)) < 0.01f)
+
+            if (Vector3.Distance(WorldPos, new Vector3(_path[_curPathPos].x, 0f, _path[_curPathPos].z)) < 0.01f)
             {
-                WorldPos = Vector3.MoveTowards(WorldPos, new Vector3(path[1].x, 0f, path[1].z), Speed * 0.016f);
                 //WorldPos = new Vector3(path[1].x, 0f, path[1].z);
+                WorldPos = Vector3.MoveTowards(WorldPos, new Vector3(_path[_curPathPos].x, 0f, _path[_curPathPos].z), Speed * 0.016f);
+                _curPathPos++; // 각각의 노드에 도착하면 그 다음 노드로 이동
+
+                if (_curPathPos >= _path.Count)
+                {
+                    _arrived = true;
+                    //_curPathPos = 1;
+                }
+
                 BroadcastMove();
                 return;
             }
-            
+
 
             // 도달할 때까지 첫번쨰 노드로 이동
-            WorldPos = Vector3.MoveTowards(WorldPos, new Vector3(path[1].x, 0f, path[1].z), Speed * 0.016f);
+            WorldPos = Vector3.MoveTowards(WorldPos, new Vector3(_path[_curPathPos].x, 0f, _path[_curPathPos].z), Speed * 0.016f);
+
+
             BroadcastMove();
 
             Console.WriteLine($"패킷보냄 : {WorldPos.x},\t {WorldPos.z}");
