@@ -80,8 +80,8 @@ public class PacketHandler : MonoBehaviour
         S_Monstermove movePacket = packet as S_Monstermove;
 
         GameObject go = Managers.Object.FindById(movePacket.ObjectId);
-        if (go == null)
-            return;
+		if (go == null)
+			return;
 
         MonsterController mc = Util.GetOrAddComponent<MonsterController>(go);
 		mc.Id = movePacket.ObjectId;
@@ -92,7 +92,7 @@ public class PacketHandler : MonoBehaviour
 		mc.WorldPos = new Vector3(movePacket.PosInfo.PosX, movePacket.PosInfo.PosY, movePacket.PosInfo.PosZ);
 
 		mc.DestPos = new Vector3(movePacket.DestInfo.PosX, movePacket.DestInfo.PosY, movePacket.DestInfo.PosZ);
-		Managers.UI.Log(mc.WorldPos.ToString());
+		Managers.UI.Log("현재좌표 : " + mc.WorldPos.ToString());
     }
 
     #region pended

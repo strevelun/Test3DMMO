@@ -33,7 +33,7 @@ public class CreatureController : MonoBehaviour
 
         set
         {
-            if (PosInfo.PosX == value.x && PosInfo.PosY == value.y)
+            if (PosInfo.PosX == value.x && PosInfo.PosY == value.y && PosInfo.PosZ == value.z)
                 return;
 
             PosInfo.PosX = value.x;
@@ -148,7 +148,7 @@ public class CreatureController : MonoBehaviour
         if (_animator == null)
             return;
 
-        Debug.Log("CreatureControllerø°º≠ »£√‚");
+        Debug.Log("CreatureControllerÏóêÏÑú Ìò∏Ï∂ú");
         /*
         _animator.SetFloat(_animIDSpeed, _animationBlend);
         _animator.SetFloat(_animIDMotionSpeed, _inputMagnitude);

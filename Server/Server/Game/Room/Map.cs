@@ -80,6 +80,16 @@ namespace Server.Game
 			return new Vector3(a.x - b.x, a.y - b.y, a.z - b.z);
 		}
 
+        public static bool operator ==(Vector3 a, Vector3 b)
+        {
+            return (a.x == b.x) && (a.y == b.y) && (a.z == b.z);
+        }
+
+        public static bool operator !=(Vector3 a, Vector3 b)
+        {
+            return !(a == b);
+        }
+
         public static Vector3 MoveTowards(Vector3 current, Vector3 target, float maxDistanceDelta)
         {
             float num = target.x - current.x;

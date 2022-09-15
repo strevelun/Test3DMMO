@@ -25,7 +25,7 @@ namespace Server.Game
             Map.LoadMap();
 
             //// TEMP
-            for (int i = 0; i < 1; i++)
+            for (int i = 0; i < 50; i++)
             {
                 Monster monster = ObjectManager.Instance.Add<Monster>(); // 몬스터 고유 아이디 생성
                 MonsterData data;
